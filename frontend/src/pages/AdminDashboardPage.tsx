@@ -345,7 +345,16 @@ export default function AdminDashboardPage() {
                         <td className="py-3 px-2">{w.alamat}</td>
                         <td className="py-3 px-2">{w.no_hp}</td>
                         <td className="py-3 px-2">{w.agama.label}</td>
-                        <td className="py-3 px-2">{w.has_photo ? '✅' : '❌'}</td>
+                        <td className="py-3 px-2">
+                          {w.has_photo ? (
+                            <button
+                              onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
+                              className="text-green-600 hover:text-green-700 font-medium"
+                            >
+                              📷 Lihat
+                            </button>
+                          ) : '—'}
+                        </td></td>
                         <td className="py-3 px-2 text-sm text-gray-500">{formatDate(w.created_at)}</td>
                       </tr>
                     ))}
