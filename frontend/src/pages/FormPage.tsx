@@ -277,9 +277,9 @@ export default function FormPage() {
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-cream-100">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-soft">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto px-4 py-6">
           <div className="flex items-center justify-center">
-            <CelesteLogo size="md" animated={false} />
+            <CelesteLogo size="lg" animated={false} />
           </div>
 
           {/* Progress bar */}
