@@ -40,10 +40,21 @@ export default function AdminDashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
   const [filterBlok, setFilterBlok] = useState('');
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [selectedWargaId, setSelectedWarga] = useState<number | null>(null);
   const [adminUser, setAdminUser] = useState<any>(null);
+  const [wargaPhotos, setWargaPhotos] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
+    if (selectedWargaId) {
+      // Fetch warga detail for photos
+      api.get(`/admin/warga/${selectedWargaId}`).then(res => {
+        if (res.data.success) {
+          setWargaPhotos(res.data.data.foto);
+        }
+      }).catch(() => setWargaPhotos({}));
+    }
+  }, [selectedWargaId]);
     const userStr = localStorage.getItem('admin_user');
     if (!token || !userStr) {
       navigate('/admin/login');
@@ -295,8 +306,13 @@ export default function AdminDashboardPage() {
                         <h4 className="font-medium text-maroon-700">{w.nama_lengkap}</h4>
                         <p className="text-sm text-gray-500">{w.alamat}</p>
                       </div>
-                      {w.has_photo && (
-                        <span className="badge badge-gold">📷</span>
+              {w.has_photo && (
+                        <span
+                          onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
+                          className="badge badge-gold cursor-pointer hover:bg-gold-200"
+                        >
+                          📷
+                        </span>
                       )}
                     </div>
                     <div className="text-sm text-gray-500">
@@ -361,6 +377,52 @@ export default function AdminDashboardPage() {
             </motion.div>
           </>
         ) : null}
+
+        {/* Photo Modal */}
+        {showPhotoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" onClick={() => setShowPhotoModal(false)}>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-2xl p-6 max-w-lg w-full"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-display text-maroon-700">Foto Warga</h3>
+                <button onClick={() => setShowPhotoModal(false)} className="text-gray-500 hover:text-gray-700 text-xl">✕</button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {wargaPhotos.kk && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Kartu Keluarga</p>
+                    <img src={wargaPhotos.kk} alt="KK" className="w-full rounded-lg border" />
+                  </div>
+                )}
+                {wargaPhotos.ktp && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">KTP</p>
+                    <img src={wargaPhotos.ktp} alt="KTP" className="w-full rounded-lg border" />
+                  </div>
+                )}
+                {wargaPhotos.keluarga && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Keluarga</p>
+                    <img src={wargaPhotos.keluarga} alt="Keluarga" className="w-full rounded-lg border" />
+                  </div>
+                )}
+                {wargaPhotos.selfie && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Selfie</p>
+                    <img src={wargaPhotos.selfie} alt="Selfie" className="w-full rounded-lg border" />
+                  </div>
+                )}
+              </div>
+              {Object.keys(wargaPhotos).length === 0 && (
+                <p className="text-center text-gray-500 py-8">Memuat foto...</p>
+              )}
+            </motion.div>
+          </div>
+        )}
       </main>
     </div>
   );
