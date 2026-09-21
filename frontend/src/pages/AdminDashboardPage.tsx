@@ -351,10 +351,10 @@ export default function AdminDashboardPage() {
                               onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
                               className="text-green-600 hover:text-green-700 font-medium"
                             >
-                              📷 Lihat
+                              📷 Lihat Foto
                             </button>
                           ) : '—'}
-                        </td></td>
+                        </td>
                         <td className="py-3 px-2 text-sm text-gray-500">{formatDate(w.created_at)}</td>
                       </tr>
                     ))}
