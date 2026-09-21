@@ -718,7 +718,7 @@ export default function FormPage() {
                     <div className="card">
                       <h3 className="font-display text-maroon-700 mb-3">Persetujuan</h3>
                       <p className="text-sm text-gray-600">
-                        Data yang saya berikan adalah benar dan akurat. Saya menyetujui bahwa data ini hanya用于 keperluan administrasi pengurus komplek Celeste.
+                        Data yang saya berikan adalah benar dan akurat. Saya menyetujui bahwa data ini hanya untuk keperluan administrasi pengurus Cluster Celeste.
                       </p>
                     </div>
                   </div>
