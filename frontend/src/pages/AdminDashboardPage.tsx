@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
@@ -67,7 +67,7 @@ export default function AdminDashboardPage() {
     }
   }, [selectedWargaId]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [statsRes, wargaRes] = await Promise.all([
@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, page, search, filterBlok]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
