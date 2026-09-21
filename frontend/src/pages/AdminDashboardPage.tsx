@@ -46,8 +46,19 @@ export default function AdminDashboardPage() {
   const [wargaPhotos, setWargaPhotos] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    const userStr = localStorage.getItem('admin_user');
+    if (!token || !userStr) {
+      navigate('/admin/login');
+      return;
+    }
+    setAdminUser(JSON.parse(userStr));
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    fetchData();
+  }, [navigate, page, search, filterBlok]);
+
+  useEffect(() => {
     if (selectedWargaId) {
-      // Fetch warga detail for photos
       api.get(`/admin/warga/${selectedWargaId}`).then(res => {
         if (res.data.success) {
           setWargaPhotos(res.data.data.foto);
@@ -55,16 +66,6 @@ export default function AdminDashboardPage() {
       }).catch(() => setWargaPhotos({}));
     }
   }, [selectedWargaId]);
-    const userStr = localStorage.getItem('admin_user');
-    if (!token || !userStr) {
-      navigate('/admin/login');
-      return;
-    }
-    setAdminUser(JSON.parse(userStr));
-
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    fetchData();
-  }, [navigate, page, search, filterBlok]);
 
   const fetchData = async () => {
     setLoading(true);
