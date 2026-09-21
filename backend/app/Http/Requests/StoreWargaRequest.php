@@ -49,7 +49,7 @@ class StoreWargaRequest extends FormRequest
             'status_pernikahan' => ['required', new Enum(StatusPernikahan::class)],
             'pekerjaan' => ['nullable', 'string', 'max:100'],
             'agama' => ['required', new Enum(Agama::class)],
-            'no_kontak_darurat' => ['nullable', 'string', 'min:10', 'max:20'],
+            'no_kontak_darurat' => ['nullable', 'string', 'max:20'],
 
             // Step 4: Foto (all optional)
             'foto_kk' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

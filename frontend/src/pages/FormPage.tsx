@@ -114,6 +114,7 @@ export default function FormPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [ktpExists, setKtpExists] = useState(false);
   const [photoPreviews, setPhotoPreviews] = useState<Record<string, string>>({});
+  const [backendErrors, setBackendErrors] = useState<Record<string, string>>({});
 
   // Form setup
   const methods = useForm<FormData>({
@@ -263,6 +264,16 @@ export default function FormPage() {
         setKtpExists(true);
         setCurrentStep(2);
         setSubmitError('No. KTP ini sudah terdaftar di sistem.');
+      } else if (error.response?.status === 422 && error.response?.data?.errors) {
+        // Backend validation errors
+        setBackendErrors(error.response.data.errors);
+        setSubmitError('Mohon perbaiki isian Anda.');
+        // Navigate to the step with errors
+        if (error.response.data.errors.no_kontak_darurat || error.response.data.errors.status_pernikahan || error.response.data.errors.pekerjaan || error.response.data.errors.agama) {
+          setCurrentStep(3);
+        } else if (error.response.data.errors.nama_lengkap || error.response.data.errors.no_kk || error.response.data.errors.no_ktp || error.response.data.errors.no_hp) {
+          setCurrentStep(2);
+        }
       } else {
         setSubmitError('Terjadi kesalahan. Silakan coba lagi.');
       }
@@ -567,9 +578,12 @@ export default function FormPage() {
                     <input
                       {...methods.register('no_kontak_darurat')}
                       type="tel"
-                      className="input"
+                      className={`input ${backendErrors.no_kontak_darurat ? 'input-error' : ''}`}
                       placeholder="08xxxxxxxxxx"
                     />
+                    {backendErrors.no_kontak_darurat && (
+                      <p className="text-red-500 text-sm mt-1">{backendErrors.no_kontak_darurat[0]}</p>
+                    )}
                   </div>
                 </motion.div>
               )}
