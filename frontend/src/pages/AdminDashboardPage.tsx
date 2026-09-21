@@ -111,7 +111,7 @@ export default function AdminDashboardPage() {
       <header className="bg-white shadow-soft sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <CelesteLogo size="sm" animated={false} />
+            <CelesteLogo size="md" animated={false} />
             <div>
               <h1 className="text-lg font-display text-maroon-700">Dashboard Admin</h1>
               <p className="text-sm text-gray-500">{adminUser?.name}</p>
