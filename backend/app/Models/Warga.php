@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Agama;
 use App\Enums\StatusPernikahan;
 use App\Enums\StatusTempatTinggal;
+use App\Enums\SubStatusKontrak;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,10 +21,29 @@ class Warga extends Model
         'blok',
         'unit',
         'status_tempat_tinggal',
+        'sub_status',
         'nama_kepala_keluarga',
+        'hp_kepala_keluarga',
+        'nama_istri',
+        'nama_anak',
+        'hubungan_lain',
+        'nama_hubungan_lain',
+        'mulai_kontrak',
+        'berakhir_kontrak',
+        'nama_pemilik_usaha',
+        'hp_pemilik_usaha',
+        'jenis_usaha',
+        'jenis_usaha_lainnya',
+        'jumlah_karyawan',
+        'karyawan_menginap',
+        'jumlah_karyawan_menginap',
+        'nama_karyawan_menginap',
+        'nama_pic',
+        'hp_pic',
+        'nama_penghuni_lain',
         'nama_lengkap',
-        'no_kk',           // Will be encrypted by mutator
-        'no_ktp',          // Will be encrypted by mutator
+        'no_kk',
+        'no_ktp',
         'no_ktp_hash',
         'no_hp',
         'no_kontak_darurat',
@@ -44,8 +64,14 @@ class Warga extends Model
 
     protected $casts = [
         'status_tempat_tinggal' => StatusTempatTinggal::class,
+        'sub_status' => SubStatusKontrak::class,
         'status_pernikahan' => StatusPernikahan::class,
         'agama' => Agama::class,
+        'karyawan_menginap' => 'boolean',
+        'jumlah_karyawan' => 'integer',
+        'jumlah_karyawan_menginap' => 'integer',
+        'mulai_kontrak' => 'date',
+        'berakhir_kontrak' => 'date',
     ];
 
     /**

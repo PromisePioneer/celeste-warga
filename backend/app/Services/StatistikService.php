@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Warga;
 use App\Enums\StatusTempatTinggal;
+use App\Enums\SubStatusKontrak;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +18,7 @@ class StatistikService
         return [
             'total_warga' => $this->getTotalWarga(),
             'warga_per_status' => $this->getWargaPerStatus(),
+            'warga_per_sub_status' => $this->getWargaPerSubStatus(),
             'warga_per_blok' => $this->getWargaPerBlok(),
             'warga_per_agama' => $this->getWargaPerAgama(),
             'warga_per_status_pernikahan' => $this->getWargaPerStatusPernikahan(),
@@ -46,7 +48,26 @@ class StatistikService
             $result[] = [
                 'label' => $status->label(),
                 'value' => $status->value,
-                'count' => Warga::where('status_tempat_tinggal', $status)->count(),
+                'count' => Warga::where('status_tempat_tinggal', $status->value)->count(),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get warga count per sub status (kontrak type)
+     */
+    private function getWargaPerSubStatus(): array
+    {
+        $subStatuses = SubStatusKontrak::cases();
+
+        $result = [];
+        foreach ($subStatuses as $status) {
+            $result[] = [
+                'label' => $status->label(),
+                'value' => $status->value,
+                'count' => Warga::where('sub_status', $status->value)->count(),
             ];
         }
 

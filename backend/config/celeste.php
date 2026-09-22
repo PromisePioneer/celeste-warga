@@ -12,33 +12,29 @@ return [
     */
 
     'blok' => [
-        '89.A-P' => [
-            'label' => 'Blok 89.A-P',
+        '89' => [
+            'label' => 'Blok 89',
             'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'],
         ],
-        '18.A-V' => [
-            'label' => 'Blok 18.A-V',
+        '18' => [
+            'label' => 'Blok 18',
             'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'],
         ],
-        '19.A-V' => [
-            'label' => 'Blok 19.A-V',
+        '19' => [
+            'label' => 'Blok 19',
             'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'],
         ],
-        '99.A-S' => [
-            'label' => 'Blok 99.A-S',
+        '99' => [
+            'label' => 'Blok 99',
             'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'],
         ],
-        '8.A-K' => [
-            'label' => 'Blok 8.A-K',
+        '8' => [
+            'label' => 'Blok 8',
             'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'],
         ],
-        '9.A-W' => [
-            'label' => 'Blok 9.A-W',
-            'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W'],
-        ],
-        '9.AA-AC' => [
-            'label' => 'Blok 9.AA-AC',
-            'units' => ['AA', 'AB', 'AC'],
+        '9' => [
+            'label' => 'Blok 9',
+            'units' => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'AA', 'AB', 'AC'],
         ],
     ],
 

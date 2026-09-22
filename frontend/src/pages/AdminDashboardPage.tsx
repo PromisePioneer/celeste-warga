@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 interface Statistik {
   total_warga: number;
   warga_per_status: { label: string; value: string; count: number }[];
+  warga_per_sub_status: { label: string; value: string; count: number }[];
   warga_per_blok: { blok: string; count: number }[];
   warga_per_agama: { label: string; count: number }[];
   warga_per_status_pernikahan: { label: string; count: number }[];
@@ -22,6 +23,22 @@ interface Warga {
   blok: string;
   unit: string;
   alamat: string;
+  status_tempat_tinggal: { label: string; value: string };
+  sub_status: { label: string; value: string } | null;
+  nama: string | null;
+  hp: string | null;
+  nama_kepala_keluarga: string | null;
+  hp_kepala_keluarga: string | null;
+  nama_pemilik_usaha: string | null;
+  hp_pemilik_usaha: string | null;
+  nama_pic: string | null;
+  hp_pic: string | null;
+  mulai_kontrak: string | null;
+  berakhir_kontrak: string | null;
+  jenis_usaha: string | null;
+  jumlah_karyawan: number | null;
+  nama_istri: string | null;
+  nama_anak: string | null;
   no_hp: string;
   agama: { label: string };
   status_pernikahan: { label: string };
@@ -317,6 +334,8 @@ export default function AdminDashboardPage() {
                       )}
                     </div>
                     <div className="text-sm text-gray-500">
+                      <p className="font-medium">{w.status_tempat_tinggal.label}{w.sub_status ? ` - ${w.sub_status.label}` : ''}</p>
+                      <p>{w.nama_kepala_keluarga || w.nama || w.nama_pemilik_usaha || w.nama_pic || '-'}</p>
                       <p>{w.no_hp}</p>
                       <p>{w.agama.label} • {w.status_pernikahan.label}</p>
                       <p className="text-xs mt-1">{formatDate(w.created_at)}</p>
@@ -332,6 +351,7 @@ export default function AdminDashboardPage() {
                     <tr className="border-b border-gray-200">
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Nama</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Alamat</th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Status</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">HP</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Agama</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Foto</th>
@@ -343,6 +363,12 @@ export default function AdminDashboardPage() {
                       <tr key={w.id} className="border-b border-gray-100 hover:bg-cream-50">
                         <td className="py-3 px-2">{w.nama_lengkap}</td>
                         <td className="py-3 px-2">{w.alamat}</td>
+                        <td className="py-3 px-2">
+                          <span className="text-xs bg-maroon-100 text-maroon-700 px-2 py-1 rounded-full">
+                            {w.status_tempat_tinggal.label}
+                            {w.sub_status && <span> - {w.sub_status.label}</span>}
+                          </span>
+                        </td>
                         <td className="py-3 px-2">{w.no_hp}</td>
                         <td className="py-3 px-2">{w.agama.label}</td>
                         <td className="py-3 px-2">
@@ -351,7 +377,7 @@ export default function AdminDashboardPage() {
                               onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
                               className="text-green-600 hover:text-green-700 font-medium"
                             >
-                              📷 Lihat Foto
+                              📷 Lihat
                             </button>
                           ) : '—'}
                         </td>
