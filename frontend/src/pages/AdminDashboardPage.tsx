@@ -25,20 +25,30 @@ interface Warga {
   alamat: string;
   status_tempat_tinggal: { label: string; value: string };
   sub_status: { label: string; value: string } | null;
-  nama: string | null;
-  hp: string | null;
+  // Milik Sendiri & Kontrak Keluarga
   nama_kepala_keluarga: string | null;
   hp_kepala_keluarga: string | null;
-  nama_pemilik_usaha: string | null;
-  hp_pemilik_usaha: string | null;
-  nama_pic: string | null;
-  hp_pic: string | null;
-  mulai_kontrak: string | null;
-  berakhir_kontrak: string | null;
-  jenis_usaha: string | null;
-  jumlah_karyawan: number | null;
   nama_istri: string | null;
   nama_anak: string | null;
+  hubungan_lain: string | null;
+  nama_hubungan_lain: string | null;
+  // Kontrak fields
+  mulai_kontrak: string | null;
+  berakhir_kontrak: string | null;
+  nama_pemilik_usaha: string | null;
+  hp_pemilik_usaha: string | null;
+  jenis_usaha: string | null;
+  jenis_usaha_lainnya: string | null;
+  jumlah_karyawan: number | null;
+  karyawan_menginap: boolean;
+  jumlah_karyawan_menginap: number | null;
+  nama_karyawan_menginap: string | null;
+  // PIC & Kost
+  nama_pic: string | null;
+  hp_pic: string | null;
+  nama_penghuni_lain: string | null;
+  nama: string | null;
+  hp: string | null;
   no_hp: string;
   agama: { label: string };
   status_pernikahan: { label: string };
@@ -59,6 +69,7 @@ export default function AdminDashboardPage() {
   const [filterBlok, setFilterBlok] = useState('');
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [selectedWargaId, setSelectedWarga] = useState<number | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [adminUser, setAdminUser] = useState<any>(null);
   const [wargaPhotos, setWargaPhotos] = useState<Record<string, string>>({});
 
@@ -132,6 +143,55 @@ export default function AdminDashboardPage() {
       return dateStr;
     }
     return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // Get relevant detail based on status
+  const toggleExpand = (id: number) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const getDetailInfo = (w: Warga) => {
+    if (w.status_tempat_tinggal.value === 'milik_sendiri') {
+      return w.nama_kepala_keluarga || '-';
+    }
+    if (w.status_tempat_tinggal.value === 'kontrak') {
+      if (w.sub_status?.value === 'usaha') {
+        return `${w.nama_pemilik_usaha || '-'} • ${w.jenis_usaha || '-'}${w.jenis_usaha_lainnya ? ` (${w.jenis_usaha_lainnya})` : ''}`;
+      }
+      if (w.sub_status?.value === 'keluarga') {
+        return w.nama_kepala_keluarga || '-';
+      }
+      if (w.sub_status?.value === 'mahasiswa') {
+        return `PIC: ${w.nama_pic || '-'}`;
+      }
+    }
+    if (w.status_tempat_tinggal.value === 'kost') {
+      return w.nama || '-';
+    }
+    return '-';
+  };
+
+  const getContactInfo = (w: Warga) => {
+    if (w.status_tempat_tinggal.value === 'kontrak') {
+      if (w.sub_status?.value === 'usaha') return w.hp_pemilik_usaha || '-';
+      if (w.sub_status?.value === 'mahasiswa') return w.hp_pic || '-';
+    }
+    return w.no_hp;
+  };
+
+  const getKontrakPeriod = (w: Warga) => {
+    if (w.mulai_kontrak && w.berakhir_kontrak) {
+      return `${w.mulai_kontrak} - ${w.berakhir_kontrak}`;
+    }
+    return null;
   };
 
   return (
@@ -334,10 +394,36 @@ export default function AdminDashboardPage() {
                       )}
                     </div>
                     <div className="text-sm text-gray-500">
-                      <p className="font-medium">{w.status_tempat_tinggal.label}{w.sub_status ? ` - ${w.sub_status.label}` : ''}</p>
-                      <p>{w.nama_kepala_keluarga || w.nama || w.nama_pemilik_usaha || w.nama_pic || '-'}</p>
-                      <p>{w.no_hp}</p>
-                      <p>{w.agama.label} • {w.status_pernikahan.label}</p>
+                      <p className="font-medium">
+                        <span className="bg-maroon-100 text-maroon-700 px-2 py-0.5 rounded-full text-xs">
+                          {w.status_tempat_tinggal.label}
+                        </span>
+                        {w.sub_status && (
+                          <span className="ml-1 bg-gold-100 text-gold-700 px-2 py-0.5 rounded-full text-xs">
+                            {w.sub_status.label}
+                          </span>
+                        )}
+                      </p>
+                      <p className="mt-1">
+                        <span className="text-gray-400">Detail:</span> {getDetailInfo(w)}
+                      </p>
+                      <p>
+                        <span className="text-gray-400">HP:</span> {getContactInfo(w)}
+                      </p>
+                      {getKontrakPeriod(w) && (
+                        <p>
+                          <span className="text-gray-400">Kontrak:</span> {getKontrakPeriod(w)}
+                        </p>
+                      )}
+                      {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'usaha' && w.jumlah_karyawan != null && w.jumlah_karyawan > 0 && (
+                        <p>
+                          <span className="text-gray-400">Karyawan:</span> {w.jumlah_karyawan} orang
+                          {w.karyawan_menginap && (
+                            <span className="ml-1 text-red-600">(menginap: {w.jumlah_karyawan_menginap})</span>
+                          )}
+                        </p>
+                      )}
+                      <p className="mt-1">{w.agama.label} • {w.status_pernikahan.label}</p>
                       <p className="text-xs mt-1">{formatDate(w.created_at)}</p>
                     </div>
                   </div>
@@ -349,40 +435,137 @@ export default function AdminDashboardPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
+                      <th className="w-10 py-3 px-2"></th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Nama</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Alamat</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Status</th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">HP</th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Agama</th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Foto</th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Kontak</th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Tanggal</th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Foto</th>
                     </tr>
                   </thead>
                   <tbody>
                     {warga.map((w) => (
-                      <tr key={w.id} className="border-b border-gray-100 hover:bg-cream-50">
-                        <td className="py-3 px-2">{w.nama_lengkap}</td>
-                        <td className="py-3 px-2">{w.alamat}</td>
-                        <td className="py-3 px-2">
-                          <span className="text-xs bg-maroon-100 text-maroon-700 px-2 py-1 rounded-full">
-                            {w.status_tempat_tinggal.label}
-                            {w.sub_status && <span> - {w.sub_status.label}</span>}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2">{w.no_hp}</td>
-                        <td className="py-3 px-2">{w.agama.label}</td>
-                        <td className="py-3 px-2">
-                          {w.has_photo ? (
+                      <>
+                        <tr key={w.id} className="border-b border-gray-100 hover:bg-cream-50">
+                          <td className="py-3 px-2">
                             <button
-                              onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
-                              className="text-green-600 hover:text-green-700 font-medium"
+                              onClick={() => toggleExpand(w.id)}
+                              className="text-gray-400 hover:text-maroon-700 transition-colors"
                             >
-                              📷 Lihat
+                              {expandedRows.has(w.id) ? '▼' : '▶'}
                             </button>
-                          ) : '—'}
-                        </td>
-                        <td className="py-3 px-2 text-sm text-gray-500">{formatDate(w.created_at)}</td>
-                      </tr>
+                          </td>
+                          <td className="py-3 px-2 font-medium text-maroon-700">{w.nama_lengkap}</td>
+                          <td className="py-3 px-2">{w.alamat}</td>
+                          <td className="py-3 px-2">
+                            <span className="text-xs bg-maroon-100 text-maroon-700 px-2 py-1 rounded-full">
+                              {w.status_tempat_tinggal.label}
+                            </span>
+                            {w.sub_status && (
+                              <span className="ml-1 text-xs bg-gold-100 text-gold-700 px-2 py-1 rounded-full">
+                                {w.sub_status.label}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-2 text-sm">
+                            <div>{getContactInfo(w)}</div>
+                            <div className="text-gray-400 text-xs">{w.agama.label} • {w.status_pernikahan.label}</div>
+                          </td>
+                          <td className="py-3 px-2 text-sm text-gray-500">{formatDate(w.created_at)}</td>
+                          <td className="py-3 px-2">
+                            {w.has_photo ? (
+                              <button
+                                onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
+                                className="text-green-600 hover:text-green-700 font-medium"
+                              >
+                                📷 Lihat
+                              </button>
+                            ) : '—'}
+                          </td>
+                        </tr>
+                        {expandedRows.has(w.id) && (
+                          <tr key={`${w.id}-detail`} className="bg-cream-50">
+                            <td colSpan={7} className="p-4">
+                              <div className="grid grid-cols-4 gap-4 text-sm">
+                                {/* Kolom 1: Identitas */}
+                                <div className="space-y-1">
+                                  <h4 className="font-semibold text-maroon-700 mb-2">Identitas</h4>
+                                  <p><span className="text-gray-500">Nama Lengkap:</span> {w.nama_lengkap}</p>
+                                  <p><span className="text-gray-500">Alamat:</span> {w.alamat}</p>
+                                  <p><span className="text-gray-500">Status:</span> {w.status_tempat_tinggal.label}{w.sub_status ? ` / ${w.sub_status.label}` : ''}</p>
+                                  <p><span className="text-gray-500">Agama:</span> {w.agama.label}</p>
+                                  <p><span className="text-gray-500">Status Nikah:</span> {w.status_pernikahan.label}</p>
+                                </div>
+
+                                {/* Kolom 2: Kontak */}
+                                <div className="space-y-1">
+                                  <h4 className="font-semibold text-maroon-700 mb-2">Kontak</h4>
+                                  <p><span className="text-gray-500">No. HP:</span> {w.no_hp}</p>
+                                  {w.nama_kepala_keluarga && <p><span className="text-gray-500">HP Keluarga:</span> {w.hp_kepala_keluarga || '-'}</p>}
+                                  {w.hp_pemilik_usaha && <p><span className="text-gray-500">HP Pemilik:</span> {w.hp_pemilik_usaha}</p>}
+                                  {w.hp_pic && <p><span className="text-gray-500">HP PIC:</span> {w.hp_pic}</p>}
+                                  {w.hp && w.status_tempat_tinggal.value === 'kost' && <p><span className="text-gray-500">HP:</span> {w.hp}</p>}
+                                </div>
+
+                                {/* Kolom 3: Detail berdasarkan status */}
+                                <div className="space-y-1">
+                                  <h4 className="font-semibold text-maroon-700 mb-2">Detail</h4>
+                                  {w.status_tempat_tinggal.value === 'milik_sendiri' && (
+                                    <>
+                                      <p><span className="text-gray-500">Nama Keluarga:</span> {w.nama_kepala_keluarga || '-'}</p>
+                                      {w.nama_istri && <p><span className="text-gray-500">Istri:</span> {w.nama_istri}</p>}
+                                      {w.nama_anak && <p><span className="text-gray-500">Anak:</span> {w.nama_anak}</p>}
+                                      {w.hubungan_lain && <p><span className="text-gray-500">{w.hubungan_lain}:</span> {w.nama_hubungan_lain || '-'}</p>}
+                                    </>
+                                  )}
+                                  {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'usaha' && (
+                                    <>
+                                      <p><span className="text-gray-500">Pemilik Usaha:</span> {w.nama_pemilik_usaha || '-'}</p>
+                                      <p><span className="text-gray-500">Jenis Usaha:</span> {w.jenis_usaha === 'jasa' ? `Jasa${w.jenis_usaha_lainnya ? ` (${w.jenis_usaha_lainnya})` : ''}` : w.jenis_usaha || '-'}</p>
+                                      <p><span className="text-gray-500">Karyawan:</span> {w.jumlah_karyawan || 0} orang</p>
+                                      {w.karyawan_menginap && <p><span className="text-red-500">Menginap:</span> {w.jumlah_karyawan_menginap} ({w.nama_karyawan_menginap || '-'})</p>}
+                                    </>
+                                  )}
+                                  {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'keluarga' && (
+                                    <>
+                                      <p><span className="text-gray-500">Nama Keluarga:</span> {w.nama_kepala_keluarga || '-'}</p>
+                                      {w.nama_istri && <p><span className="text-gray-500">Istri:</span> {w.nama_istri}</p>}
+                                      {w.nama_anak && <p><span className="text-gray-500">Anak:</span> {w.nama_anak}</p>}
+                                    </>
+                                  )}
+                                  {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'mahasiswa' && (
+                                    <>
+                                      <p><span className="text-gray-500">PIC:</span> {w.nama_pic || '-'}</p>
+                                      {w.nama_penghuni_lain && <p><span className="text-gray-500">Penghuni Lain:</span> {w.nama_penghuni_lain}</p>}
+                                    </>
+                                  )}
+                                  {w.status_tempat_tinggal.value === 'kost' && (
+                                    <>
+                                      <p><span className="text-gray-500">Nama:</span> {w.nama || '-'}</p>
+                                      <p><span className="text-gray-500">HP:</span> {w.hp || '-'}</p>
+                                      {w.nama_penghuni_lain && <p><span className="text-gray-500">Penghuni Lain:</span> {w.nama_penghuni_lain}</p>}
+                                    </>
+                                  )}
+                                </div>
+
+                                {/* Kolom 4: Kontrak */}
+                                <div className="space-y-1">
+                                  <h4 className="font-semibold text-maroon-700 mb-2">Kontrak</h4>
+                                  {(w.status_tempat_tinggal.value === 'kontrak' || w.status_tempat_tinggal.value === 'kost') ? (
+                                    <>
+                                      <p><span className="text-gray-500">Mulai:</span> {w.mulai_kontrak || '-'}</p>
+                                      <p><span className="text-gray-500">Berakhir:</span> {w.berakhir_kontrak || '-'}</p>
+                                    </>
+                                  ) : (
+                                    <p className="text-gray-400">-</p>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     ))}
                   </tbody>
                 </table>
