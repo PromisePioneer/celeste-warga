@@ -53,7 +53,7 @@ export default function HomePage() {
 
           <p className="text-base md:text-lg text-gray-600 mb-6 leading-relaxed max-w-lg mx-auto">
             Mohon luangkan waktu sejenak untuk mengisi data warga ini.
-            Data Anda akan membantu kami meningkatkan kualitas pengelolaan komplek kami.
+            Data Anda akan membantu kami meningkatkan kualitas pengelolaan komplek kita.
           </p>
 
           <motion.button

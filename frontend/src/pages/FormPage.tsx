@@ -25,7 +25,7 @@ const step2Schema = z.object({
 
 const step3Schema = z.object({
   status_pernikahan: z.enum(['belum_kawin', 'kawin', 'cerai_hidup', 'cerai_mati']),
-  pekerjaan: z.string().optional(),
+  pekerjaan: z.enum(['pegawai_negeri', 'pegawai_swasta', 'wiraswasta', 'guru', 'dokter', 'tentara', 'pensiunan', 'irt', 'pelajar', 'lainnya']),
   agama: z.enum(['islam', 'kristen', 'katolik', 'hindu', 'buddha', 'konghucu', 'lainnya']),
   no_kontak_darurat: z.string().optional(),
 });
@@ -54,7 +54,7 @@ const BLOK_CONFIG = {
 const STATUS_TEMPAT_TINGGAL = {
   Hunian: [
     { value: 'milik_sendiri', label: 'Milik Sendiri', icon: '🏠' },
-    { value: 'kontrak', label: 'Kontrak', icon: '📝' },
+    { value: 'kontrak', label: 'Kontrak Usaha', icon: '📝' },
     { value: 'kontrak_keluarga', label: 'Kontrak Keluarga', icon: '👨‍👩‍👧‍👦' },
     { value: 'kontrak_mahasiswa', label: 'Kontrak Mahasiswa', icon: '🎓' },
     { value: 'kost', label: 'Kost', icon: '🛏️' },
@@ -82,10 +82,23 @@ const STATUS_NIKAH_OPTIONS = [
   { value: 'cerai_mati', label: 'Cerai Mati' },
 ];
 
+const PEKERJAAN_OPTIONS = [
+  { value: 'pegawai_negeri', label: 'Pegawai Negeri' },
+  { value: 'pegawai_swasta', label: 'Pegawai Swasta' },
+  { value: 'wiraswasta', label: 'Wiraswasta' },
+  { value: 'guru', label: 'Guru' },
+  { value: 'dokter', label: 'Dokter' },
+  { value: 'tentara', label: 'TNI/Polri' },
+  { value: 'pensiunan', label: 'Pensiunan' },
+  { value: 'irt', label: 'Ibu Rumah Tangga' },
+  { value: 'pelajar', label: 'Pelajar/Mahasiswa' },
+  { value: 'lainnya', label: 'Lainnya' },
+];
+
 const STEPS = [
   { id: 1, title: 'Tempat Tinggal' },
   { id: 2, title: 'Identitas' },
-  { id: 3, title: 'Data Diri' },
+  { id: 3, title: 'Status Pernikahan' },
   { id: 4, title: 'Foto' },
   { id: 5, title: 'Tinjau' },
 ];
@@ -130,7 +143,7 @@ export default function FormPage() {
       no_ktp: '',
       no_hp: '',
       status_pernikahan: undefined,
-      pekerjaan: '',
+      pekerjaan: undefined,
       agama: undefined,
       no_kontak_darurat: '',
     },
@@ -193,7 +206,7 @@ export default function FormPage() {
         isValid = await trigger(['nama_lengkap', 'no_kk', 'no_ktp', 'no_hp']);
         break;
       case 3:
-        isValid = await trigger(['status_pernikahan', 'agama']);
+        isValid = await trigger(['status_pernikahan', 'pekerjaan', 'agama']);
         break;
       default:
         isValid = true;
@@ -524,7 +537,7 @@ export default function FormPage() {
                   exit={{ opacity: 0, x: -20 }}
                   className="space-y-6"
                 >
-                  <h2 className="text-2xl font-display text-maroon-700 mb-6">Data Diri</h2>
+                  <h2 className="text-2xl font-display text-maroon-700 mb-6">Status Pernikahan</h2>
 
                   <div>
                     <label className="label">Status Pernikahan</label>
@@ -549,12 +562,18 @@ export default function FormPage() {
 
                   <div>
                     <label className="label">Pekerjaan</label>
-                    <input
+                    <select
                       {...methods.register('pekerjaan')}
-                      type="text"
-                      className="input"
-                      placeholder="Contoh: Pegawai Swasta, Wiraswasta, Guru, dll"
-                    />
+                      className={`input ${errors.pekerjaan ? 'input-error' : ''}`}
+                    >
+                      <option value="">Pilih Pekerjaan</option>
+                      {PEKERJAAN_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                    {errors.pekerjaan && (
+                      <p className="text-red-500 text-sm mt-1">{errors.pekerjaan.message}</p>
+                    )}
                   </div>
 
                   <div>
@@ -706,7 +725,7 @@ export default function FormPage() {
                       <h3 className="font-display text-maroon-700 mb-3">Data Diri</h3>
                       <div className="text-sm space-y-1 text-gray-600">
                         <p><span className="font-medium">Status Pernikahan:</span> {STATUS_NIKAH_OPTIONS.find(o => o.value === watchedValues.status_pernikahan)?.label}</p>
-                        <p><span className="font-medium">Pekerjaan:</span> {watchedValues.pekerjaan || '-'}</p>
+                        <p><span className="font-medium">Pekerjaan:</span> {PEKERJAAN_OPTIONS.find(o => o.value === watchedValues.pekerjaan)?.label || '-'}</p>
                         <p><span className="font-medium">Agama:</span> {AGAMA_OPTIONS.find(o => o.value === watchedValues.agama)?.label}</p>
                         <p><span className="font-medium">Kontak Darurat:</span> {watchedValues.no_kontak_darurat || '-'}</p>
                       </div>

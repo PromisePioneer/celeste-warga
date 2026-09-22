@@ -51,17 +51,6 @@ export function CelesteLogo({
         animate={{ opacity: animated ? 1 : 1 }}
         transition={{ duration: 0.1 }}
       >
-        {/* Tangkai 1 */}
-        <motion.path
-          d="M 45 25 Q 25 35, 18 50 Q 12 65, 25 75"
-          stroke={`url(#gold-gradient-${size})`}
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          initial={animated ? { strokeDashoffset: 500 } : { strokeDashoffset: 0 }}
-          animate={{ strokeDashoffset: animated ? 0 : 0 }}
-          transition={{ duration: 1.2, delay: 0, ease: 'easeOut' }}
-        />
         <motion.circle
           cx="25"
           cy="75"
@@ -301,18 +290,6 @@ export function CelesteLogo({
           Celeste
         </text>
 
-        {/* Decorative swash */}
-        <motion.path
-          d={`M ${75 + (textSize - 52) * 0.5} ${32 + (textSize - 52) * 0.3} Q ${72 + (textSize - 52) * 0.5} ${42 + (textSize - 52) * 0.3}, ${75 + (textSize - 52) * 0.5} ${52 + (textSize - 52) * 0.3}`}
-          stroke={`url(#maroon-gradient-${size})`}
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          opacity="0.4"
-          initial={animated ? { opacity: 0 } : { opacity: 0.4 }}
-          animate={{ opacity: animated ? 0.4 : 0.4 }}
-          transition={{ duration: 0.5, delay: 1.5 }}
-        />
       </g>
     </svg>
   );
