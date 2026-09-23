@@ -12,8 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop unique constraint first if it exists
-        DB::statement('ALTER TABLE warga DROP INDEX IF EXISTS warga_no_ktp_hash_unique');
+        // Check if unique constraint exists and drop it
+        $exists = DB::select("SELECT COUNT(*) as cnt FROM information_schema.statistics
+            WHERE table_schema = DATABASE()
+            AND table_name = 'warga'
+            AND index_name = 'warga_no_ktp_hash_unique'");
+
+        if ($exists[0]->cnt > 0) {
+            DB::statement('ALTER TABLE warga DROP INDEX warga_no_ktp_hash_unique');
+        }
 
         // Change columns to nullable
         Schema::table('warga', function (Blueprint $table) {
