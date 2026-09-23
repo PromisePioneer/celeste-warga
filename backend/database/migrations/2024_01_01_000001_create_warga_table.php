@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -28,8 +27,8 @@ return new class extends Migration
 
             // Personal identity
             $table->string('nama_lengkap', 255);
-            $table->text('no_kk_encrypted'); // Encrypted KK number
-            $table->text('no_ktp_encrypted'); // Encrypted KTP number
+            $table->text('no_kk_encrypted')->nullable(); // Encrypted KK number
+            $table->text('no_ktp_encrypted')->nullable(); // Encrypted KTP number
             $table->string('no_ktp_hash', 64)->unique(); // HMAC-SHA256 hash for duplicate detection
             $table->string('no_hp', 20);
             $table->string('no_kontak_darurat', 20)->nullable();
