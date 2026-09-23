@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\Warga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class StoreWargaAction
@@ -13,6 +14,18 @@ class StoreWargaAction
      */
     public function execute(array $data, ?string $ip = null): Warga
     {
+        // Debug: log photo fields
+        $photoFields = ['foto_kk', 'foto_ktp', 'foto_keluarga', 'foto_selfie'];
+        foreach ($photoFields as $field) {
+            if (isset($data[$field])) {
+                Log::info("Photo field {$field}: " . gettype($data[$field]));
+                if ($data[$field] instanceof \Illuminate\Http\UploadedFile) {
+                    Log::info("  -> File name: " . $data[$field]->getClientOriginalName());
+                    Log::info("  -> File size: " . $data[$field]->getSize());
+                }
+            }
+        }
+
         // Prepare data
         $wargaData = [
             'blok' => $data['blok'],
