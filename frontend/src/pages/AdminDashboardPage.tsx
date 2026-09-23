@@ -221,13 +221,12 @@ export default function AdminDashboardPage() {
     const handleExport = async () => {
         try {
             const token = localStorage.getItem('admin_token');
-            // Use relative URL - works with proxy in dev, same-origin in production
             const response = await fetch(
                 `/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Accept': 'text/csv',
+                        'Accept': 'application/pdf',
                     },
                 }
             );
@@ -238,13 +237,7 @@ export default function AdminDashboardPage() {
 
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'data-warga-celeste.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            window.open(url, '_blank');
         } catch (error) {
             console.error('Export error:', error);
             alert('Gagal export data');

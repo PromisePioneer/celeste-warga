@@ -80,8 +80,6 @@ class StoreWargaRequest extends FormRequest
             'no_kontak_darurat' => ['required', 'string', 'min:10', 'max:20', 'regex:/^[\d+\s]+$/'],
 
             // Step 4: Foto (all optional)
-            'foto_kk' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'foto_ktp' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'foto_keluarga' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'foto_selfie' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
@@ -169,8 +167,6 @@ class StoreWargaRequest extends FormRequest
             'no_kontak_darurat.regex' => 'Format No. Kontak darurat tidak valid.',
             'status_pernikahan.required' => 'Pilih status pernikahan.',
             'agama.required' => 'Pilih agama.',
-            'foto_kk.image' => 'Foto KK harus berupa gambar.',
-            'foto_ktp.image' => 'Foto KTP harus berupa gambar.',
         ];
     }
 }

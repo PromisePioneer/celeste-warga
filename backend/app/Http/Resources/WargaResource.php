@@ -63,8 +63,6 @@ class WargaResource extends JsonResource
                 'label' => $this->agama->label(),
             ],
             'foto' => [
-                'kk' => $this->foto_kk ? url('/api/storage/' . $this->foto_kk) : null,
-                'ktp' => $this->foto_ktp ? url('/api/storage/' . $this->foto_ktp) : null,
                 'keluarga' => $this->foto_keluarga ? url('/api/storage/' . $this->foto_keluarga) : null,
                 'selfie' => $this->foto_selfie ? url('/api/storage/' . $this->foto_selfie) : null,
             ],

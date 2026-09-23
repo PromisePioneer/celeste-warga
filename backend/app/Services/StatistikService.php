@@ -127,9 +127,7 @@ class StatistikService
      */
     private function getWargaDenganFoto(): int
     {
-        return Warga::whereNotNull('foto_kk')
-            ->orWhereNotNull('foto_ktp')
-            ->orWhereNotNull('foto_keluarga')
+        return Warga::whereNotNull('foto_keluarga')
             ->orWhereNotNull('foto_selfie')
             ->count();
     }
