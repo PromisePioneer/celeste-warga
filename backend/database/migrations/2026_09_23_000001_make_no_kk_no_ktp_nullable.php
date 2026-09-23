@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('warga', function (Blueprint $table) {
-            // Make no_kk and no_ktp_hash nullable (no_ktp_encrypted is text which is already nullable by default)
+            // Make no_kk and no_ktp_hash nullable
+            // Note: unique constraint already exists from original migration, just change nullability
             $table->text('no_kk_encrypted')->nullable()->change();
-            $table->string('no_ktp_hash', 64)->nullable()->unique()->change();
+            $table->string('no_ktp_hash', 64)->nullable()->change();
         });
     }
 
