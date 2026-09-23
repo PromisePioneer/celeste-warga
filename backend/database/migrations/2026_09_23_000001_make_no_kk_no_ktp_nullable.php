@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,9 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop unique constraint first if it exists
+        DB::statement('ALTER TABLE warga DROP INDEX IF EXISTS warga_no_ktp_hash_unique');
+
+        // Change columns to nullable
         Schema::table('warga', function (Blueprint $table) {
-            // Make no_kk and no_ktp_hash nullable
-            // Note: unique constraint already exists from original migration, just change nullability
             $table->text('no_kk_encrypted')->nullable()->change();
             $table->string('no_ktp_hash', 64)->nullable()->change();
         });
@@ -26,7 +29,10 @@ return new class extends Migration
     {
         Schema::table('warga', function (Blueprint $table) {
             $table->text('no_kk_encrypted')->nullable(false)->change();
-            $table->string('no_ktp_hash', 64)->nullable(false)->unique()->change();
+            $table->string('no_ktp_hash', 64)->nullable(false)->change();
         });
+
+        // Re-add unique constraint
+        DB::statement('ALTER TABLE warga ADD UNIQUE INDEX warga_no_ktp_hash_unique (no_ktp_hash)');
     }
 };
