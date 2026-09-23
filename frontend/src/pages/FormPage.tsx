@@ -493,6 +493,11 @@ export default function FormPage() {
         window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
+    // Helper to check if value is a file-like object
+    const isFileLike = (value: any): boolean => {
+        return value instanceof Blob || value instanceof File;
+    };
+
     // Photo handlers
     const handlePhotoChange = async (field: string, file: File | null) => {
         if (!file) {
@@ -503,10 +508,13 @@ export default function FormPage() {
 
         try {
             const compressed = await compressImage(file);
+            console.log('Compressed for', field, ':', compressed);
             const preview = URL.createObjectURL(compressed);
             setPhotoPreviews(prev => ({...prev, [field]: preview}));
             setValue(field as keyof FormData, compressed as any);
-        } catch {
+        } catch (err) {
+            console.error('Compression failed for', field, err);
+            // Fallback: simpan file asli
             setPhotoPreviews(prev => ({...prev, [field]: URL.createObjectURL(file)}));
             setValue(field as keyof FormData, file as any);
         }
@@ -521,7 +529,8 @@ export default function FormPage() {
             const formData = new FormData();
             Object.entries(data).forEach(([key, value]) => {
                 if (value !== undefined && value !== null && key.startsWith('foto_')) {
-                    if (value instanceof File) {
+                    // Check for Blob or File
+                    if (isFileLike(value)) {
                         formData.append(key, value);
                     }
                 } else if (value !== undefined && value !== null) {
