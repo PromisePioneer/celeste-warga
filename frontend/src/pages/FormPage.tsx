@@ -64,8 +64,6 @@ const step3Schema = z.object({
 });
 
 const step4Schema = z.object({
-    foto_kk: z.any().optional(),
-    foto_ktp: z.any().optional(),
     foto_keluarga: z.any().optional(),
     foto_selfie: z.any().optional(),
 });
@@ -922,7 +920,8 @@ export default function FormPage() {
                                                         Pemilik Usaha</h3>
 
                                                     <div>
-                                                        <label className="label label-required">Nama Pemilik Usaha</label>
+                                                        <label className="label label-required">Nama Pemilik
+                                                            Usaha</label>
                                                         <input
                                                             {...methods.register('nama_pemilik_usaha')}
                                                             type="text"
@@ -935,7 +934,8 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label label-required">No. HP Pemilik Usaha</label>
+                                                        <label className="label label-required">No. HP Pemilik
+                                                            Usaha</label>
                                                         <input
                                                             {...methods.register('hp_pemilik_usaha')}
                                                             type="tel"
@@ -1026,7 +1026,8 @@ export default function FormPage() {
                                                             className="space-y-4"
                                                         >
                                                             <div>
-                                                                <label className="label label-required">Jumlah Karyawan yang
+                                                                <label className="label label-required">Jumlah Karyawan
+                                                                    yang
                                                                     Menginap</label>
                                                                 <input
                                                                     {...methods.register('jumlah_karyawan_menginap')}
@@ -1040,7 +1041,8 @@ export default function FormPage() {
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <label className="label label-required">Nama Karyawan yang
+                                                                <label className="label label-required">Nama Karyawan
+                                                                    yang
                                                                     Menginap</label>
                                                                 <textarea
                                                                     {...methods.register('nama_karyawan_menginap')}
@@ -1094,7 +1096,8 @@ export default function FormPage() {
                                                         Kepemilikan</h3>
 
                                                     <div>
-                                                        <label className="label label-required">Nama Kepala Keluarga</label>
+                                                        <label className="label label-required">Nama Kepala
+                                                            Keluarga</label>
                                                         <input
                                                             {...methods.register('nama_kepala_keluarga')}
                                                             type="text"
@@ -1107,7 +1110,8 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label label-required">No. HP Kepala Keluarga</label>
+                                                        <label className="label label-required">No. HP Kepala
+                                                            Keluarga</label>
                                                         <input
                                                             {...methods.register('hp_kepala_keluarga')}
                                                             type="tel"
@@ -1477,10 +1481,8 @@ export default function FormPage() {
                                         melewati langkah ini.</p>
 
                                     <div className="space-y-4">
-                                        {['foto_kk', 'foto_ktp', 'foto_keluarga', 'foto_selfie'].map((field) => {
+                                        {['foto_keluarga', 'foto_selfie'].map((field) => {
                                             const labels: Record<string, string> = {
-                                                foto_kk: 'Foto Kartu Keluarga',
-                                                foto_ktp: 'Foto KTP',
                                                 foto_keluarga: 'Foto Keluarga',
                                                 foto_selfie: 'Foto Selfie',
                                             };
