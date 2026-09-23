@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {useForm, FormProvider} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -7,6 +7,10 @@ import {z} from 'zod';
 import api from '../lib/axios';
 import imageCompression from 'browser-image-compression';
 import {CelesteLogo} from '../components/logo/CelesteLogo';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+
+// hCaptcha config
+const HCAPTCHA_SITE_KEY = '8a0cb4ea-0414-456e-b52c-bb581918b4d0';
 
 // Validation schemas
 const step1Schema = z.object({
@@ -217,6 +221,8 @@ export default function FormPage() {
     const [ktpExists, setKtpExists] = useState(false);
     const [photoPreviews, setPhotoPreviews] = useState<Record<string, string>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [hcaptchaToken, setHcaptchaToken] = useState<string | null>(null);
+    const captchaRef = useRef<HCaptcha>(null);
 
     // Form setup
     const methods = useForm<FormData>({
@@ -529,6 +535,14 @@ export default function FormPage() {
         setIsSubmitting(true);
         setSubmitError(null);
 
+        // Validate hCaptcha
+        if (!hcaptchaToken) {
+            setSubmitError('Silakan verifikasi Captcha terlebih dahulu.');
+            setIsSubmitting(false);
+            captchaRef.current?.resetCaptcha();
+            return;
+        }
+
         try {
             const formData = new FormData();
             Object.entries(data).forEach(([key, value]) => {
@@ -548,6 +562,9 @@ export default function FormPage() {
                 formData.set('no_kontak_darurat', normalizePhone(data.no_kontak_darurat));
             }
 
+            // Add hCaptcha token
+            formData.set('hcaptcha_token', hcaptchaToken);
+
             await api.post('/warga', formData, {
                 headers: {'Content-Type': 'multipart/form-data'},
             });
@@ -556,10 +573,16 @@ export default function FormPage() {
             localStorage.removeItem(STORAGE_KEY);
             navigate('/sukses');
         } catch (error: any) {
+            // Reset hCaptcha on error
+            captchaRef.current?.resetCaptcha();
+            setHcaptchaToken(null);
+
             if (error.response?.status === 422 && error.response?.data?.kode === 'ktp_sudah_terdaftar') {
                 setKtpExists(true);
                 setCurrentStep(2);
                 setSubmitError('No. KTP ini sudah terdaftar di sistem.');
+            } else if (error.response?.status === 422 && error.response?.data?.kode === 'captcha_verification_failed') {
+                setSubmitError('Verifikasi Captcha gagal. Silakan coba lagi.');
             } else if (error.response?.status === 422 && error.response?.data?.errors) {
                 // Backend validation errors - flatten nested fieldErrors
                 const flatErrors = flattenBackendErrors(error.response.data.errors);
@@ -641,7 +664,12 @@ export default function FormPage() {
             {/* Form Content */}
             <main className="max-w-2xl mx-auto px-4 py-8">
                 <FormProvider {...methods}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit)} onKeyDown={(e) => {
+                        // Prevent Enter key from submitting unless on step 5
+                        if (e.key === 'Enter' && currentStep < 5) {
+                            e.preventDefault();
+                        }
+                    }}>
                         <AnimatePresence mode="wait">
                             {/* Step 1: Tempat Tinggal */}
                             {currentStep === 1 && (
@@ -1732,6 +1760,17 @@ export default function FormPage() {
                                         </div>
                                     </div>
 
+                                    {/* hCaptcha */}
+                                    <div className="flex justify-center py-4">
+                                        <HCaptcha
+                                            ref={captchaRef}
+                                            sitekey={HCAPTCHA_SITE_KEY}
+                                            onVerify={(token) => setHcaptchaToken(token)}
+                                            onExpire={() => setHcaptchaToken(null)}
+                                            onError={() => setHcaptchaToken(null)}
+                                        />
+                                    </div>
+
                                     {submitError && (
                                         <motion.div
                                             initial={{opacity: 0, y: -10}}
@@ -1770,7 +1809,7 @@ export default function FormPage() {
                             ) : (
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting || ktpExists}
+                                    disabled={isSubmitting || ktpExists || !hcaptchaToken}
                                     className="btn btn-gold"
                                 >
                                     {isSubmitting ? (
