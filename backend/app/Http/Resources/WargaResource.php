@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class WargaResource extends JsonResource
 {
@@ -62,10 +63,10 @@ class WargaResource extends JsonResource
                 'label' => $this->agama->label(),
             ],
             'foto' => [
-                'kk' => $this->foto_kk ? route('admin.warga.foto', ['warga' => $this->id, 'jenis' => 'foto_kk']) : null,
-                'ktp' => $this->foto_ktp ? route('admin.warga.foto', ['warga' => $this->id, 'jenis' => 'foto_ktp']) : null,
-                'keluarga' => $this->foto_keluarga ? route('admin.warga.foto', ['warga' => $this->id, 'jenis' => 'foto_keluarga']) : null,
-                'selfie' => $this->foto_selfie ? route('admin.warga.foto', ['warga' => $this->id, 'jenis' => 'foto_selfie']) : null,
+                'kk' => $this->foto_kk ? Storage::disk('public')->url($this->foto_kk) : null,
+                'ktp' => $this->foto_ktp ? Storage::disk('public')->url($this->foto_ktp) : null,
+                'keluarga' => $this->foto_keluarga ? Storage::disk('public')->url($this->foto_keluarga) : null,
+                'selfie' => $this->foto_selfie ? Storage::disk('public')->url($this->foto_selfie) : null,
             ],
             'has_photo' => $this->hasAnyPhoto(),
             'created_at' => $this->created_at?->toIso8601String(),
