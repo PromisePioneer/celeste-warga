@@ -208,8 +208,9 @@ export default function AdminDashboardPage() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem('admin_token');
+      // Use relative URL - works with proxy in dev, same-origin in production
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
+        `/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
