@@ -77,7 +77,7 @@ class StoreWargaRequest extends FormRequest
             'status_pernikahan' => ['required', new Enum(StatusPernikahan::class)],
             'pekerjaan' => ['nullable', 'string', 'max:100'],
             'agama' => ['required', new Enum(Agama::class)],
-            'no_kontak_darurat' => ['nullable', 'string', 'max:20'],
+            'no_kontak_darurat' => ['required', 'string', 'min:10', 'max:20', 'regex:/^[\d+\s]+$/'],
 
             // Step 4: Foto (all optional)
             'foto_kk' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -164,6 +164,9 @@ class StoreWargaRequest extends FormRequest
             'no_ktp.regex' => 'No. KTP harus berupa angka.',
             'no_hp.required' => 'No. HP wajib diisi.',
             'no_hp.min' => 'No. HP minimal 10 digit.',
+            'no_kontak_darurat.required' => 'No. Kontak darurat wajib diisi.',
+            'no_kontak_darurat.min' => 'No. Kontak darurat minimal 10 digit.',
+            'no_kontak_darurat.regex' => 'Format No. Kontak darurat tidak valid.',
             'status_pernikahan.required' => 'Pilih status pernikahan.',
             'agama.required' => 'Pilih agama.',
             'foto_kk.image' => 'Foto KK harus berupa gambar.',

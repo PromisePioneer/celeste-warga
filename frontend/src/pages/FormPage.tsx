@@ -56,7 +56,7 @@ const step3Schema = z.object({
     status_pernikahan: z.enum(['belum_kawin', 'kawin', 'cerai_hidup', 'cerai_mati']),
     pekerjaan: z.enum(['pegawai_negeri', 'pegawai_swasta', 'wiraswasta', 'guru', 'dokter', 'tentara', 'pensiunan', 'irt', 'pelajar', 'lainnya']),
     agama: z.enum(['islam', 'kristen', 'katolik', 'hindu', 'buddha', 'konghucu', 'lainnya']),
-    no_kontak_darurat: z.string().optional(),
+    no_kontak_darurat: z.string().min(10, 'No. Kontak darurat minimal 10 digit').regex(/^[\d+\s]+$/, 'Format tidak valid'),
 });
 
 const step4Schema = z.object({
@@ -468,6 +468,10 @@ export default function FormPage() {
                 }
                 if (!watchedValues.agama) {
                     step3Errors['agama'] = 'Pilih agama';
+                    step3Valid = false;
+                }
+                if (!watchedValues.no_kontak_darurat || watchedValues.no_kontak_darurat.length < 10) {
+                    step3Errors['no_kontak_darurat'] = 'No. Kontak darurat wajib diisi (min. 10 digit)';
                     step3Valid = false;
                 }
                 isValid = step3Valid;
@@ -1417,7 +1421,7 @@ export default function FormPage() {
                                     </div>
 
                                     <div>
-                                        <label className="label">No. Kontak Darurat (opsional)</label>
+                                        <label className="label label-required">No. Kontak Darurat</label>
                                         <input
                                             {...methods.register('no_kontak_darurat')}
                                             type="tel"

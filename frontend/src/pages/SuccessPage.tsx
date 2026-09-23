@@ -11,8 +11,8 @@ export default function SuccessPage() {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md w-full text-center"
       >
-        <div className="mb-8">
-          <CelesteLogo size="md" animated={true} />
+        <div className="mb-8 mx-auto">
+          <CelesteLogo size="lg" animated={true} />
         </div>
 
         <div className="card">

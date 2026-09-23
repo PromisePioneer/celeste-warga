@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import { CelesteLogo } from '../components/logo/CelesteLogo';
+import { ZoomableImage } from '../components/ui/ZoomableImage';
+import { useDebounce } from '../hooks/useDebounce';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 interface Statistik {
@@ -65,7 +67,7 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [filterBlok, setFilterBlok] = useState('');
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [selectedWargaId, setSelectedWarga] = useState<number | null>(null);
@@ -73,6 +75,15 @@ export default function AdminDashboardPage() {
   const [adminUser, setAdminUser] = useState<any>(null);
   const [wargaPhotos, setWargaPhotos] = useState<Record<string, string>>({});
 
+  // Debounced search - triggers fetch after 300ms of no typing
+  const search = useDebounce(searchInput, 300);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterBlok]);
+
+  // Initial load + fetch when page/search/filter changes
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
     const userStr = localStorage.getItem('admin_user');
@@ -355,8 +366,8 @@ export default function AdminDashboardPage() {
                   <input
                     type="search"
                     placeholder="Cari nama..."
-                    value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     className="input w-48"
                   />
                   <select
@@ -377,7 +388,28 @@ export default function AdminDashboardPage() {
 
               {/* Mobile Cards */}
               <div className="md:hidden space-y-3">
-                {warga.map((w) => (
+                {loading ? (
+                  // Skeleton loading for mobile
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="border border-gray-200 rounded-xl p-4 animate-pulse">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-32" />
+                          <div className="h-3 bg-gray-200 rounded w-24" />
+                        </div>
+                        <div className="h-6 w-6 bg-gray-200 rounded-full" />
+                      </div>
+                      <div className="space-y-2 mt-3">
+                        <div className="h-3 bg-gray-200 rounded w-full" />
+                        <div className="h-3 bg-gray-200 rounded w-3/4" />
+                        <div className="h-3 bg-gray-200 rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))
+                ) : warga.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">Tidak ada data warga</p>
+                ) : (
+                  warga.map((w) => (
                   <div key={w.id} className="border border-gray-200 rounded-xl p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
@@ -427,7 +459,8 @@ export default function AdminDashboardPage() {
                       <p className="text-xs mt-1">{formatDate(w.created_at)}</p>
                     </div>
                   </div>
-                ))}
+                ))
+                )}
               </div>
 
               {/* Desktop Table */}
@@ -445,128 +478,147 @@ export default function AdminDashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {warga.map((w) => (
-                      <>
-                        <tr key={w.id} className="border-b border-gray-100 hover:bg-cream-50">
-                          <td className="py-3 px-2">
-                            <button
-                              onClick={() => toggleExpand(w.id)}
-                              className="text-gray-400 hover:text-maroon-700 transition-colors"
-                            >
-                              {expandedRows.has(w.id) ? '▼' : '▶'}
-                            </button>
-                          </td>
-                          <td className="py-3 px-2 font-medium text-maroon-700">{w.nama_lengkap}</td>
-                          <td className="py-3 px-2">{w.alamat}</td>
-                          <td className="py-3 px-2">
-                            <span className="text-xs bg-maroon-100 text-maroon-700 px-2 py-1 rounded-full">
-                              {w.status_tempat_tinggal.label}
-                            </span>
-                            {w.sub_status && (
-                              <span className="ml-1 text-xs bg-gold-100 text-gold-700 px-2 py-1 rounded-full">
-                                {w.sub_status.label}
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-3 px-2 text-sm">
-                            <div>{getContactInfo(w)}</div>
-                            <div className="text-gray-400 text-xs">{w.agama.label} • {w.status_pernikahan.label}</div>
-                          </td>
-                          <td className="py-3 px-2 text-sm text-gray-500">{formatDate(w.created_at)}</td>
-                          <td className="py-3 px-2">
-                            {w.has_photo ? (
-                              <button
-                                onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
-                                className="text-green-600 hover:text-green-700 font-medium"
-                              >
-                                📷 Lihat
-                              </button>
-                            ) : '—'}
-                          </td>
+                    {loading ? (
+                      // Skeleton loading for desktop
+                      Array.from({ length: 5 }).map((_, i) => (
+                        <tr key={i} className="border-b border-gray-100 animate-pulse">
+                          <td className="py-3 px-2"><div className="h-4 w-4 bg-gray-200 rounded" /></td>
+                          <td className="py-3 px-2"><div className="h-4 bg-gray-200 rounded w-28" /></td>
+                          <td className="py-3 px-2"><div className="h-4 bg-gray-200 rounded w-40" /></td>
+                          <td className="py-3 px-2"><div className="h-5 bg-gray-200 rounded w-24" /></td>
+                          <td className="py-3 px-2"><div className="space-y-1"><div className="h-3 bg-gray-200 rounded w-20" /><div className="h-2 bg-gray-200 rounded w-16" /></div></td>
+                          <td className="py-3 px-2"><div className="h-3 bg-gray-200 rounded w-20" /></td>
+                          <td className="py-3 px-2"><div className="h-4 bg-gray-200 rounded w-12" /></td>
                         </tr>
-                        {expandedRows.has(w.id) && (
-                          <tr key={`${w.id}-detail`} className="bg-cream-50">
-                            <td colSpan={7} className="p-4">
-                              <div className="grid grid-cols-4 gap-4 text-sm">
-                                {/* Kolom 1: Identitas */}
-                                <div className="space-y-1">
-                                  <h4 className="font-semibold text-maroon-700 mb-2">Identitas</h4>
-                                  <p><span className="text-gray-500">Nama Lengkap:</span> {w.nama_lengkap}</p>
-                                  <p><span className="text-gray-500">Alamat:</span> {w.alamat}</p>
-                                  <p><span className="text-gray-500">Status:</span> {w.status_tempat_tinggal.label}{w.sub_status ? ` / ${w.sub_status.label}` : ''}</p>
-                                  <p><span className="text-gray-500">Agama:</span> {w.agama.label}</p>
-                                  <p><span className="text-gray-500">Status Nikah:</span> {w.status_pernikahan.label}</p>
-                                </div>
-
-                                {/* Kolom 2: Kontak */}
-                                <div className="space-y-1">
-                                  <h4 className="font-semibold text-maroon-700 mb-2">Kontak</h4>
-                                  <p><span className="text-gray-500">No. HP:</span> {w.no_hp}</p>
-                                  {w.nama_kepala_keluarga && <p><span className="text-gray-500">HP Keluarga:</span> {w.hp_kepala_keluarga || '-'}</p>}
-                                  {w.hp_pemilik_usaha && <p><span className="text-gray-500">HP Pemilik:</span> {w.hp_pemilik_usaha}</p>}
-                                  {w.hp_pic && <p><span className="text-gray-500">HP PIC:</span> {w.hp_pic}</p>}
-                                  {w.hp && w.status_tempat_tinggal.value === 'kost' && <p><span className="text-gray-500">HP:</span> {w.hp}</p>}
-                                </div>
-
-                                {/* Kolom 3: Detail berdasarkan status */}
-                                <div className="space-y-1">
-                                  <h4 className="font-semibold text-maroon-700 mb-2">Detail</h4>
-                                  {w.status_tempat_tinggal.value === 'milik_sendiri' && (
-                                    <>
-                                      <p><span className="text-gray-500">Nama Keluarga:</span> {w.nama_kepala_keluarga || '-'}</p>
-                                      {w.nama_istri && <p><span className="text-gray-500">Istri:</span> {w.nama_istri}</p>}
-                                      {w.nama_anak && <p><span className="text-gray-500">Anak:</span> {w.nama_anak}</p>}
-                                      {w.hubungan_lain && <p><span className="text-gray-500">{w.hubungan_lain}:</span> {w.nama_hubungan_lain || '-'}</p>}
-                                    </>
-                                  )}
-                                  {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'usaha' && (
-                                    <>
-                                      <p><span className="text-gray-500">Pemilik Usaha:</span> {w.nama_pemilik_usaha || '-'}</p>
-                                      <p><span className="text-gray-500">Jenis Usaha:</span> {w.jenis_usaha === 'jasa' ? `Jasa${w.jenis_usaha_lainnya ? ` (${w.jenis_usaha_lainnya})` : ''}` : w.jenis_usaha || '-'}</p>
-                                      <p><span className="text-gray-500">Karyawan:</span> {w.jumlah_karyawan || 0} orang</p>
-                                      {w.karyawan_menginap && <p><span className="text-red-500">Menginap:</span> {w.jumlah_karyawan_menginap} ({w.nama_karyawan_menginap || '-'})</p>}
-                                    </>
-                                  )}
-                                  {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'keluarga' && (
-                                    <>
-                                      <p><span className="text-gray-500">Nama Keluarga:</span> {w.nama_kepala_keluarga || '-'}</p>
-                                      {w.nama_istri && <p><span className="text-gray-500">Istri:</span> {w.nama_istri}</p>}
-                                      {w.nama_anak && <p><span className="text-gray-500">Anak:</span> {w.nama_anak}</p>}
-                                    </>
-                                  )}
-                                  {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'mahasiswa' && (
-                                    <>
-                                      <p><span className="text-gray-500">PIC:</span> {w.nama_pic || '-'}</p>
-                                      {w.nama_penghuni_lain && <p><span className="text-gray-500">Penghuni Lain:</span> {w.nama_penghuni_lain}</p>}
-                                    </>
-                                  )}
-                                  {w.status_tempat_tinggal.value === 'kost' && (
-                                    <>
-                                      <p><span className="text-gray-500">Nama:</span> {w.nama || '-'}</p>
-                                      <p><span className="text-gray-500">HP:</span> {w.hp || '-'}</p>
-                                      {w.nama_penghuni_lain && <p><span className="text-gray-500">Penghuni Lain:</span> {w.nama_penghuni_lain}</p>}
-                                    </>
-                                  )}
-                                </div>
-
-                                {/* Kolom 4: Kontrak */}
-                                <div className="space-y-1">
-                                  <h4 className="font-semibold text-maroon-700 mb-2">Kontrak</h4>
-                                  {(w.status_tempat_tinggal.value === 'kontrak' || w.status_tempat_tinggal.value === 'kost') ? (
-                                    <>
-                                      <p><span className="text-gray-500">Mulai:</span> {w.mulai_kontrak || '-'}</p>
-                                      <p><span className="text-gray-500">Berakhir:</span> {w.berakhir_kontrak || '-'}</p>
-                                    </>
-                                  ) : (
-                                    <p className="text-gray-400">-</p>
-                                  )}
-                                </div>
-                              </div>
+                      ))
+                    ) : warga.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="text-center text-gray-500 py-12">Tidak ada data warga</td>
+                      </tr>
+                    ) : (
+                      warga.map((w) => (
+                        <>
+                          <tr key={w.id} className="border-b border-gray-100 hover:bg-cream-50">
+                            <td className="py-3 px-2">
+                              <button
+                                onClick={() => toggleExpand(w.id)}
+                                className="text-gray-400 hover:text-maroon-700 transition-colors"
+                              >
+                                {expandedRows.has(w.id) ? '▼' : '▶'}
+                              </button>
+                            </td>
+                            <td className="py-3 px-2 font-medium text-maroon-700">{w.nama_lengkap}</td>
+                            <td className="py-3 px-2">{w.alamat}</td>
+                            <td className="py-3 px-2">
+                              <span className="text-xs bg-maroon-100 text-maroon-700 px-2 py-1 rounded-full">
+                                {w.status_tempat_tinggal.label}
+                              </span>
+                              {w.sub_status && (
+                                <span className="ml-1 text-xs bg-gold-100 text-gold-700 px-2 py-1 rounded-full">
+                                  {w.sub_status.label}
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-2 text-sm">
+                              <div>{getContactInfo(w)}</div>
+                              <div className="text-gray-400 text-xs">{w.agama.label} • {w.status_pernikahan.label}</div>
+                            </td>
+                            <td className="py-3 px-2 text-sm text-gray-500">{formatDate(w.created_at)}</td>
+                            <td className="py-3 px-2">
+                              {w.has_photo ? (
+                                <button
+                                  onClick={() => { setSelectedWarga(w.id); setShowPhotoModal(true); }}
+                                  className="text-green-600 hover:text-green-700 font-medium"
+                                >
+                                  📷 Lihat
+                                </button>
+                              ) : '—'}
                             </td>
                           </tr>
-                        )}
-                      </>
-                    ))}
+                          {expandedRows.has(w.id) && (
+                            <tr key={`${w.id}-detail`} className="bg-cream-50">
+                              <td colSpan={7} className="p-4">
+                                <div className="grid grid-cols-4 gap-4 text-sm">
+                                  {/* Kolom 1: Identitas */}
+                                  <div className="space-y-1">
+                                    <h4 className="font-semibold text-maroon-700 mb-2">Identitas</h4>
+                                    <p><span className="text-gray-500">Nama Lengkap:</span> {w.nama_lengkap}</p>
+                                    <p><span className="text-gray-500">Alamat:</span> {w.alamat}</p>
+                                    <p><span className="text-gray-500">Status:</span> {w.status_tempat_tinggal.label}{w.sub_status ? ` / ${w.sub_status.label}` : ''}</p>
+                                    <p><span className="text-gray-500">Agama:</span> {w.agama.label}</p>
+                                    <p><span className="text-gray-500">Status Nikah:</span> {w.status_pernikahan.label}</p>
+                                  </div>
+
+                                  {/* Kolom 2: Kontak */}
+                                  <div className="space-y-1">
+                                    <h4 className="font-semibold text-maroon-700 mb-2">Kontak</h4>
+                                    <p><span className="text-gray-500">No. HP:</span> {w.no_hp}</p>
+                                    {w.nama_kepala_keluarga && <p><span className="text-gray-500">HP Keluarga:</span> {w.hp_kepala_keluarga || '-'}</p>}
+                                    {w.hp_pemilik_usaha && <p><span className="text-gray-500">HP Pemilik:</span> {w.hp_pemilik_usaha}</p>}
+                                    {w.hp_pic && <p><span className="text-gray-500">HP PIC:</span> {w.hp_pic}</p>}
+                                    {w.hp && w.status_tempat_tinggal.value === 'kost' && <p><span className="text-gray-500">HP:</span> {w.hp}</p>}
+                                  </div>
+
+                                  {/* Kolom 3: Detail berdasarkan status */}
+                                  <div className="space-y-1">
+                                    <h4 className="font-semibold text-maroon-700 mb-2">Detail</h4>
+                                    {w.status_tempat_tinggal.value === 'milik_sendiri' && (
+                                      <>
+                                        <p><span className="text-gray-500">Nama Keluarga:</span> {w.nama_kepala_keluarga || '-'}</p>
+                                        {w.nama_istri && <p><span className="text-gray-500">Istri:</span> {w.nama_istri}</p>}
+                                        {w.nama_anak && <p><span className="text-gray-500">Anak:</span> {w.nama_anak}</p>}
+                                        {w.hubungan_lain && <p><span className="text-gray-500">{w.hubungan_lain}:</span> {w.nama_hubungan_lain || '-'}</p>}
+                                      </>
+                                    )}
+                                    {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'usaha' && (
+                                      <>
+                                        <p><span className="text-gray-500">Pemilik Usaha:</span> {w.nama_pemilik_usaha || '-'}</p>
+                                        <p><span className="text-gray-500">Jenis Usaha:</span> {w.jenis_usaha === 'jasa' ? `Jasa${w.jenis_usaha_lainnya ? ` (${w.jenis_usaha_lainnya})` : ''}` : w.jenis_usaha || '-'}</p>
+                                        <p><span className="text-gray-500">Karyawan:</span> {w.jumlah_karyawan || 0} orang</p>
+                                        {w.karyawan_menginap && <p><span className="text-red-500">Menginap:</span> {w.jumlah_karyawan_menginap} ({w.nama_karyawan_menginap || '-'})</p>}
+                                      </>
+                                    )}
+                                    {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'keluarga' && (
+                                      <>
+                                        <p><span className="text-gray-500">Nama Keluarga:</span> {w.nama_kepala_keluarga || '-'}</p>
+                                        {w.nama_istri && <p><span className="text-gray-500">Istri:</span> {w.nama_istri}</p>}
+                                        {w.nama_anak && <p><span className="text-gray-500">Anak:</span> {w.nama_anak}</p>}
+                                      </>
+                                    )}
+                                    {w.status_tempat_tinggal.value === 'kontrak' && w.sub_status?.value === 'mahasiswa' && (
+                                      <>
+                                        <p><span className="text-gray-500">PIC:</span> {w.nama_pic || '-'}</p>
+                                        {w.nama_penghuni_lain && <p><span className="text-gray-500">Penghuni Lain:</span> {w.nama_penghuni_lain}</p>}
+                                      </>
+                                    )}
+                                    {w.status_tempat_tinggal.value === 'kost' && (
+                                      <>
+                                        <p><span className="text-gray-500">Nama:</span> {w.nama || '-'}</p>
+                                        <p><span className="text-gray-500">HP:</span> {w.hp || '-'}</p>
+                                        {w.nama_penghuni_lain && <p><span className="text-gray-500">Penghuni Lain:</span> {w.nama_penghuni_lain}</p>}
+                                      </>
+                                    )}
+                                  </div>
+
+                                  {/* Kolom 4: Kontrak */}
+                                  <div className="space-y-1">
+                                    <h4 className="font-semibold text-maroon-700 mb-2">Kontrak</h4>
+                                    {(w.status_tempat_tinggal.value === 'kontrak' || w.status_tempat_tinggal.value === 'kost') ? (
+                                      <>
+                                        <p><span className="text-gray-500">Mulai:</span> {w.mulai_kontrak || '-'}</p>
+                                        <p><span className="text-gray-500">Berakhir:</span> {w.berakhir_kontrak || '-'}</p>
+                                      </>
+                                    ) : (
+                                      <p className="text-gray-400">-</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -614,25 +666,25 @@ export default function AdminDashboardPage() {
                 {wargaPhotos.kk && (
                   <div>
                     <p className="text-sm text-gray-500 mb-2">Kartu Keluarga</p>
-                    <img src={wargaPhotos.kk} alt="KK" className="w-full rounded-lg border" />
+                    <ZoomableImage src={wargaPhotos.kk} alt="KK" label="Kartu Keluarga" />
                   </div>
                 )}
                 {wargaPhotos.ktp && (
                   <div>
                     <p className="text-sm text-gray-500 mb-2">KTP</p>
-                    <img src={wargaPhotos.ktp} alt="KTP" className="w-full rounded-lg border" />
+                    <ZoomableImage src={wargaPhotos.ktp} alt="KTP" label="KTP" />
                   </div>
                 )}
                 {wargaPhotos.keluarga && (
                   <div>
                     <p className="text-sm text-gray-500 mb-2">Keluarga</p>
-                    <img src={wargaPhotos.keluarga} alt="Keluarga" className="w-full rounded-lg border" />
+                    <ZoomableImage src={wargaPhotos.keluarga} alt="Keluarga" label="Keluarga" />
                   </div>
                 )}
                 {wargaPhotos.selfie && (
                   <div>
                     <p className="text-sm text-gray-500 mb-2">Selfie</p>
-                    <img src={wargaPhotos.selfie} alt="Selfie" className="w-full rounded-lg border" />
+                    <ZoomableImage src={wargaPhotos.selfie} alt="Selfie" label="Selfie" />
                   </div>
                 )}
               </div>
