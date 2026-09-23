@@ -80,10 +80,10 @@ class StoreWargaRequest extends FormRequest
             'no_kontak_darurat' => ['nullable', 'string', 'max:20'],
 
             // Step 4: Foto (all optional)
-            'foto_kk' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'foto_ktp' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'foto_keluarga' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'foto_selfie' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_kk' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_ktp' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_keluarga' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_selfie' => ['nullable', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
 
         // Conditional validation based on status_tempat_tinggal

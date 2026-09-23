@@ -51,9 +51,20 @@ export function CelesteLogo({
         animate={{ opacity: animated ? 1 : 1 }}
         transition={{ duration: 0.1 }}
       >
+        {/* Tangkai 1 */}
+        <motion.path
+            d="M 75 25 Q 45 35, 30 50 Q 18 65, 28 80"
+            stroke={`url(#gold-gradient-${size})`}
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            initial={animated ? { strokeDashoffset: 500 } : { strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: animated ? 0 : 0 }}
+            transition={{ duration: 1.2, delay: 0, ease: 'easeOut' }}
+        />
         <motion.circle
-          cx="25"
-          cy="75"
+          cx="28"
+          cy="80"
           r="4"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -61,21 +72,9 @@ export function CelesteLogo({
           transition={{ duration: 0.4, delay: 0.8, type: 'spring', stiffness: 300 }}
         />
 
-
-        <motion.path
-            d="M 50 32 Q 28 45, 15 62 Q 8 78, 22 88"
-            stroke={`url(#gold-gradient-${size})`}
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-            initial={animated ? { strokeDashoffset: 500 } : { strokeDashoffset: 0 }}
-            animate={{ strokeDashoffset: animated ? 0 : 0 }}
-            transition={{ duration: 1.2, delay: 0.1, ease: 'easeOut' }}
-        />
-
         {/* Tangkai 2 */}
         <motion.path
-          d="M 50 32 Q 28 45, 15 62 Q 8 78, 22 88"
+          d="M 70 32 Q 42 42, 25 58 Q 12 72, 22 88"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -96,7 +95,7 @@ export function CelesteLogo({
 
         {/* Tangkai 3 (tengah) */}
         <motion.path
-          d="M 55 38 Q 30 52, 12 72 Q 5 88, 18 98"
+          d="M 65 40 Q 35 52, 18 70 Q 8 85, 20 100"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2.5"
           fill="none"
@@ -106,8 +105,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0.2, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="18"
-          cy="98"
+          cx="20"
+          cy="100"
           r="5"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -117,7 +116,7 @@ export function CelesteLogo({
 
         {/* Tangkai 4 */}
         <motion.path
-          d="M 62 45 Q 38 58, 22 78 Q 12 92, 28 100"
+          d="M 62 48 Q 38 58, 22 76 Q 12 90, 26 105"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -127,8 +126,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="28"
-          cy="100"
+          cx="26"
+          cy="105"
           r="4"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -138,7 +137,7 @@ export function CelesteLogo({
 
         {/* Tangkai 5 */}
         <motion.path
-          d="M 70 55 Q 48 65, 35 82 Q 25 95, 42 102"
+          d="M 60 55 Q 40 62, 28 78 Q 18 92, 32 108"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -148,8 +147,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0.4, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="42"
-          cy="102"
+          cx="32"
+          cy="108"
           r="4"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -167,7 +166,7 @@ export function CelesteLogo({
       >
         {/* Tangkai 1 */}
         <motion.path
-          d="M 355 25 Q 375 35, 382 50 Q 388 65, 375 75"
+          d="M 325 25 Q 355 35, 370 50 Q 382 65, 372 80"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -177,8 +176,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="375"
-          cy="75"
+          cx="372"
+          cy="80"
           r="4"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -188,7 +187,7 @@ export function CelesteLogo({
 
         {/* Tangkai 2 */}
         <motion.path
-          d="M 350 32 Q 372 45, 385 62 Q 392 78, 378 88"
+          d="M 330 32 Q 358 42, 375 58 Q 388 72, 378 88"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -209,7 +208,7 @@ export function CelesteLogo({
 
         {/* Tangkai 3 (tengah) */}
         <motion.path
-          d="M 345 38 Q 370 52, 388 72 Q 395 88, 382 98"
+          d="M 335 40 Q 365 52, 382 70 Q 392 85, 380 100"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2.5"
           fill="none"
@@ -219,8 +218,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0.2, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="382"
-          cy="98"
+          cx="380"
+          cy="100"
           r="5"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -230,7 +229,7 @@ export function CelesteLogo({
 
         {/* Tangkai 4 */}
         <motion.path
-          d="M 338 45 Q 362 58, 378 78 Q 388 92, 372 100"
+          d="M 338 48 Q 362 58, 378 76 Q 388 90, 374 105"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -240,8 +239,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="372"
-          cy="100"
+          cx="374"
+          cy="105"
           r="4"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
@@ -251,7 +250,7 @@ export function CelesteLogo({
 
         {/* Tangkai 5 */}
         <motion.path
-          d="M 330 55 Q 352 65, 365 82 Q 375 95, 358 102"
+          d="M 340 55 Q 360 62, 372 78 Q 382 92, 368 108"
           stroke={`url(#gold-gradient-${size})`}
           strokeWidth="2"
           fill="none"
@@ -261,8 +260,8 @@ export function CelesteLogo({
           transition={{ duration: 1.2, delay: 0.4, ease: 'easeOut' }}
         />
         <motion.circle
-          cx="358"
-          cy="102"
+          cx="368"
+          cy="108"
           r="4"
           fill={`url(#gold-gradient-${size})`}
           initial={animated ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
