@@ -205,6 +205,38 @@ export default function AdminDashboardPage() {
     return null;
   };
 
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'text/csv',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data-warga-celeste.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Gagal export data');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-cream-50">
       {/* Header */}
@@ -380,9 +412,12 @@ export default function AdminDashboardPage() {
                       <option key={b.blok} value={b.blok}>{b.blok}</option>
                     ))}
                   </select>
-                  <a href={`http://localhost:8000/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`} className="btn btn-secondary">
+                  <button
+                    onClick={handleExport}
+                    className="btn btn-secondary"
+                  >
                     Export
-                  </a>
+                  </button>
                 </div>
               </div>
 
