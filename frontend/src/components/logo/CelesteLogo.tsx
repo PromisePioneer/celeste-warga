@@ -61,6 +61,18 @@ export function CelesteLogo({
           transition={{ duration: 0.4, delay: 0.8, type: 'spring', stiffness: 300 }}
         />
 
+
+        <motion.path
+            d="M 50 32 Q 28 45, 15 62 Q 8 78, 22 88"
+            stroke={`url(#gold-gradient-${size})`}
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            initial={animated ? { strokeDashoffset: 500 } : { strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: animated ? 0 : 0 }}
+            transition={{ duration: 1.2, delay: 0.1, ease: 'easeOut' }}
+        />
+
         {/* Tangkai 2 */}
         <motion.path
           d="M 50 32 Q 28 45, 15 62 Q 8 78, 22 88"
