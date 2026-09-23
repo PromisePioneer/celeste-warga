@@ -110,8 +110,8 @@ class StoreWargaAction
         $filename = sprintf('%d_%s_%s.%s', $wargaId, $field, uniqid(), $extension);
         $path = "warga/{$filename}";
 
-        // Store directly to private disk
-        Storage::disk('private')->putFileAs('warga', $file, $filename);
+        // Store to public disk
+        $file->storeAs('warga', $filename, 'public');
 
         return $path;
     }
