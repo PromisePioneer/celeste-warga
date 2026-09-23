@@ -55,8 +55,8 @@ class StoreWargaAction
 
             // Personal identity
             'nama_lengkap' => $data['nama_lengkap'],
-            'no_kk' => $data['no_kk'],
-            'no_ktp' => $data['no_ktp'],
+            'no_kk' => $data['no_kk'] ?? null,
+            'no_ktp' => $data['no_ktp'] ?? null,
             'no_hp' => $data['no_hp'],
             'no_kontak_darurat' => $data['no_kontak_darurat'] ?? null,
 

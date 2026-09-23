@@ -47,8 +47,8 @@ const step1Schema = z.object({
 
 const step2Schema = z.object({
     nama_lengkap: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
-    no_kk: z.string().length(16, 'No KK harus 16 digit').regex(/^\d+$/, 'Hanya boleh angka'),
-    no_ktp: z.string().length(16, 'No KTP harus 16 digit').regex(/^\d+$/, 'Hanya boleh angka'),
+    no_kk: z.string().optional(),
+    no_ktp: z.string().optional(),
     no_hp: z.string().min(10, 'No HP minimal 10 digit').regex(/^[\d+\s]+$/, 'Format tidak valid'),
 });
 
@@ -302,6 +302,9 @@ export default function FormPage() {
     useEffect(() => {
         if (watchedValues.no_ktp?.length === 16) {
             checkKtpExists(watchedValues.no_ktp);
+        } else {
+            // Clear the ktpExists flag when no_ktp is cleared or not filled
+            setKtpExists(false);
         }
     }, [watchedValues.no_ktp]);
 
@@ -440,14 +443,7 @@ export default function FormPage() {
                     step2Errors['nama_lengkap'] = 'Nama lengkap wajib diisi';
                     step2Valid = false;
                 }
-                if (!watchedValues.no_kk || watchedValues.no_kk.length !== 16) {
-                    step2Errors['no_kk'] = 'No. KK harus 16 digit';
-                    step2Valid = false;
-                }
-                if (!watchedValues.no_ktp || watchedValues.no_ktp.length !== 16) {
-                    step2Errors['no_ktp'] = 'No. KTP harus 16 digit';
-                    step2Valid = false;
-                }
+                // no_kk and no_ktp are optional
                 if (!watchedValues.no_hp || watchedValues.no_hp.length < 10) {
                     step2Errors['no_hp'] = 'No. HP wajib diisi';
                     step2Valid = false;
@@ -647,7 +643,7 @@ export default function FormPage() {
 
                                     {/* Blok */}
                                     <div>
-                                        <label className="label">Blok Rumah</label>
+                                        <label className="label label-required">Blok Rumah</label>
                                         <select
                                             {...methods.register('blok')}
                                             className={`input ${fieldErrors.blok ? 'input-error' : ''}`}
@@ -668,7 +664,7 @@ export default function FormPage() {
                                             initial={{opacity: 0, height: 0}}
                                             animate={{opacity: 1, height: 'auto'}}
                                         >
-                                            <label className="label">Unit/Kavling</label>
+                                            <label className="label label-required">Unit/Kavling</label>
                                             <select
                                                 {...methods.register('unit')}
                                                 className={`input ${fieldErrors.unit ? 'input-error' : ''}`}
@@ -692,7 +688,7 @@ export default function FormPage() {
 
                                     {/* Status Tempat Tinggal */}
                                     <div>
-                                        <label className="label">Status Tempat Tinggal</label>
+                                        <label className="label label-required">Status Tempat Tinggal</label>
                                         <div className="grid grid-cols-2 gap-3">
                                             {STATUS_TEMPAT_TINGGAL.map((option) => (
                                                 <button
@@ -731,7 +727,7 @@ export default function FormPage() {
                                                 Kepemilikan</h3>
 
                                             <div>
-                                                <label className="label">Nama Kepala Keluarga</label>
+                                                <label className="label label-required">Nama Kepala Keluarga</label>
                                                 <input
                                                     {...methods.register('nama_kepala_keluarga')}
                                                     type="text"
@@ -744,7 +740,7 @@ export default function FormPage() {
                                             </div>
 
                                             <div>
-                                                <label className="label">No. HP Kepala Keluarga</label>
+                                                <label className="label label-required">No. HP Kepala Keluarga</label>
                                                 <input
                                                     {...methods.register('hp_kepala_keluarga')}
                                                     type="tel"
@@ -820,7 +816,7 @@ export default function FormPage() {
                                         >
                                             {/* Sub Status Kontrak */}
                                             <div>
-                                                <label className="label">Tipe Kontrak</label>
+                                                <label className="label label-required">Tipe Kontrak</label>
                                                 <div className="grid grid-cols-3 gap-3">
                                                     {SUB_STATUS_KONTRAK.map((option) => (
                                                         <button
@@ -858,7 +854,7 @@ export default function FormPage() {
                                                         Kontrak</h3>
 
                                                     <div>
-                                                        <label className="label">Mulai Kontrak</label>
+                                                        <label className="label label-required">Mulai Kontrak</label>
                                                         <input
                                                             {...methods.register('mulai_kontrak')}
                                                             type="date"
@@ -870,7 +866,7 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label">Berakhir Kontrak</label>
+                                                        <label className="label label-required">Berakhir Kontrak</label>
                                                         <input
                                                             {...methods.register('berakhir_kontrak')}
                                                             type="date"
@@ -885,7 +881,7 @@ export default function FormPage() {
                                                         Pemilik Usaha</h3>
 
                                                     <div>
-                                                        <label className="label">Nama Pemilik Usaha</label>
+                                                        <label className="label label-required">Nama Pemilik Usaha</label>
                                                         <input
                                                             {...methods.register('nama_pemilik_usaha')}
                                                             type="text"
@@ -898,7 +894,7 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label">No. HP Pemilik Usaha</label>
+                                                        <label className="label label-required">No. HP Pemilik Usaha</label>
                                                         <input
                                                             {...methods.register('hp_pemilik_usaha')}
                                                             type="tel"
@@ -914,7 +910,7 @@ export default function FormPage() {
                                                         Usaha</h3>
 
                                                     <div>
-                                                        <label className="label">Jenis Usaha</label>
+                                                        <label className="label label-required">Jenis Usaha</label>
                                                         <select
                                                             {...methods.register('jenis_usaha')}
                                                             className={`input ${fieldErrors.jenis_usaha ? 'input-error' : ''}`}
@@ -989,7 +985,7 @@ export default function FormPage() {
                                                             className="space-y-4"
                                                         >
                                                             <div>
-                                                                <label className="label">Jumlah Karyawan yang
+                                                                <label className="label label-required">Jumlah Karyawan yang
                                                                     Menginap</label>
                                                                 <input
                                                                     {...methods.register('jumlah_karyawan_menginap')}
@@ -1003,7 +999,7 @@ export default function FormPage() {
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <label className="label">Nama Karyawan yang
+                                                                <label className="label label-required">Nama Karyawan yang
                                                                     Menginap</label>
                                                                 <textarea
                                                                     {...methods.register('nama_karyawan_menginap')}
@@ -1030,7 +1026,7 @@ export default function FormPage() {
                                                         Kontrak</h3>
 
                                                     <div>
-                                                        <label className="label">Mulai Kontrak</label>
+                                                        <label className="label label-required">Mulai Kontrak</label>
                                                         <input
                                                             {...methods.register('mulai_kontrak')}
                                                             type="date"
@@ -1042,7 +1038,7 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label">Berakhir Kontrak</label>
+                                                        <label className="label label-required">Berakhir Kontrak</label>
                                                         <input
                                                             {...methods.register('berakhir_kontrak')}
                                                             type="date"
@@ -1057,7 +1053,7 @@ export default function FormPage() {
                                                         Kepemilikan</h3>
 
                                                     <div>
-                                                        <label className="label">Nama Kepala Keluarga</label>
+                                                        <label className="label label-required">Nama Kepala Keluarga</label>
                                                         <input
                                                             {...methods.register('nama_kepala_keluarga')}
                                                             type="text"
@@ -1070,7 +1066,7 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label">No. HP Kepala Keluarga</label>
+                                                        <label className="label label-required">No. HP Kepala Keluarga</label>
                                                         <input
                                                             {...methods.register('hp_kepala_keluarga')}
                                                             type="tel"
@@ -1149,7 +1145,7 @@ export default function FormPage() {
                                                         (Penanggung Jawab)</h3>
 
                                                     <div>
-                                                        <label className="label">Nama PIC</label>
+                                                        <label className="label label-required">Nama PIC</label>
                                                         <input
                                                             {...methods.register('nama_pic')}
                                                             type="text"
@@ -1162,7 +1158,7 @@ export default function FormPage() {
                                                     </div>
 
                                                     <div>
-                                                        <label className="label">No. HP PIC</label>
+                                                        <label className="label label-required">No. HP PIC</label>
                                                         <input
                                                             {...methods.register('hp_pic')}
                                                             type="tel"
@@ -1199,7 +1195,7 @@ export default function FormPage() {
                                             <h3 className="text-lg font-display text-maroon-700 pt-4">Data Kontrak</h3>
 
                                             <div>
-                                                <label className="label">Mulai Kontrak</label>
+                                                <label className="label label-required">Mulai Kontrak</label>
                                                 <input
                                                     {...methods.register('mulai_kontrak')}
                                                     type="date"
@@ -1211,7 +1207,7 @@ export default function FormPage() {
                                             </div>
 
                                             <div>
-                                                <label className="label">Berakhir Kontrak</label>
+                                                <label className="label label-required">Berakhir Kontrak</label>
                                                 <input
                                                     {...methods.register('berakhir_kontrak')}
                                                     type="date"
@@ -1225,7 +1221,7 @@ export default function FormPage() {
                                             <h3 className="text-lg font-display text-maroon-700 pt-4">Data Penghuni</h3>
 
                                             <div>
-                                                <label className="label">Nama</label>
+                                                <label className="label label-required">Nama</label>
                                                 <input
                                                     {...methods.register('nama')}
                                                     type="text"
@@ -1238,7 +1234,7 @@ export default function FormPage() {
                                             </div>
 
                                             <div>
-                                                <label className="label">No. HP</label>
+                                                <label className="label label-required">No. HP</label>
                                                 <input
                                                     {...methods.register('hp')}
                                                     type="tel"
@@ -1289,7 +1285,7 @@ export default function FormPage() {
                                     )}
 
                                     <div>
-                                        <label className="label">Nama Lengkap (sesuai KK)</label>
+                                        <label className="label label-required">Nama Lengkap (sesuai KK)</label>
                                         <input
                                             {...methods.register('nama_lengkap')}
                                             type="text"
@@ -1302,7 +1298,7 @@ export default function FormPage() {
                                     </div>
 
                                     <div>
-                                        <label className="label">No. Kartu Keluarga (16 digit)</label>
+                                        <label className="label">No. Kartu Keluarga (16 digit) (opsional)</label>
                                         <input
                                             {...methods.register('no_kk')}
                                             type="text"
@@ -1316,7 +1312,7 @@ export default function FormPage() {
                                     </div>
 
                                     <div>
-                                        <label className="label">No. KTP / NIK (16 digit)</label>
+                                        <label className="label">No. KTP / NIK (16 digit) (opsional)</label>
                                         <input
                                             {...methods.register('no_ktp')}
                                             type="text"
@@ -1333,7 +1329,7 @@ export default function FormPage() {
                                     </div>
 
                                     <div>
-                                        <label className="label">No. HP</label>
+                                        <label className="label label-required">No. HP</label>
                                         <input
                                             {...methods.register('no_hp')}
                                             type="tel"
@@ -1359,7 +1355,7 @@ export default function FormPage() {
                                     <h2 className="text-2xl font-display text-maroon-700 mb-6">Status Pernikahan</h2>
 
                                     <div>
-                                        <label className="label">Status Pernikahan</label>
+                                        <label className="label label-required">Status Pernikahan</label>
                                         <div className="grid grid-cols-2 gap-3">
                                             {STATUS_NIKAH_OPTIONS.map((option) => (
                                                 <button
@@ -1380,7 +1376,7 @@ export default function FormPage() {
                                     </div>
 
                                     <div>
-                                        <label className="label">Pekerjaan</label>
+                                        <label className="label label-required">Pekerjaan</label>
                                         <select
                                             {...methods.register('pekerjaan')}
                                             className={`input ${fieldErrors.pekerjaan ? 'input-error' : ''}`}
@@ -1396,7 +1392,7 @@ export default function FormPage() {
                                     </div>
 
                                     <div>
-                                        <label className="label">Agama</label>
+                                        <label className="label label-required">Agama</label>
                                         <select
                                             {...methods.register('agama')}
                                             className={`input ${fieldErrors.agama ? 'input-error' : ''}`}

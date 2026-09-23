@@ -69,8 +69,8 @@ class StoreWargaRequest extends FormRequest
 
             // Step 2: Identitas
             'nama_lengkap' => ['required', 'string', 'min:2', 'max:255'],
-            'no_kk' => ['required', 'string', 'size:16', 'regex:/^\d{16}$/'],
-            'no_ktp' => ['required', 'string', 'size:16', 'regex:/^\d{16}$/'],
+            'no_kk' => ['nullable', 'string', 'size:16', 'regex:/^\d{16}$/'],
+            'no_ktp' => ['nullable', 'string', 'size:16', 'regex:/^\d{16}$/'],
             'no_hp' => ['required', 'string', 'min:10', 'max:20', 'regex:/^[\d+\s]+$/'],
 
             // Step 3: Data Diri
@@ -158,10 +158,8 @@ class StoreWargaRequest extends FormRequest
             'hp.required' => 'No. HP wajib diisi.',
             'hp.min' => 'No. HP minimal 10 digit.',
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
-            'no_kk.required' => 'No. Kartu Keluarga wajib diisi.',
             'no_kk.size' => 'No. KK harus 16 digit.',
             'no_kk.regex' => 'No. KK harus berupa angka.',
-            'no_ktp.required' => 'No. KTP wajib diisi.',
             'no_ktp.size' => 'No. KTP harus 16 digit.',
             'no_ktp.regex' => 'No. KTP harus berupa angka.',
             'no_hp.required' => 'No. HP wajib diisi.',

@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="label">Email</label>
+              <label className="label label-required">Email</label>
               <input
                 {...register('email')}
                 type="email"
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <label className="label">Password</label>
+              <label className="label label-required">Password</label>
               <input
                 {...register('password')}
                 type="password"

@@ -36,14 +36,16 @@ class WargaController extends Controller
     {
         $validated = $request->validated();
 
-        // Check duplicate one more time
-        $hash = hash_hmac('sha256', $validated['no_ktp'], config('app.key'));
-        if (Warga::withTrashed()->where('no_ktp_hash', $hash)->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No. KTP sudah terdaftar',
-                'kode' => 'ktp_sudah_terdaftar',
-            ], 422);
+        // Check duplicate only if no_ktp is provided
+        if (!empty($validated['no_ktp'])) {
+            $hash = hash_hmac('sha256', $validated['no_ktp'], config('app.key'));
+            if (Warga::withTrashed()->where('no_ktp_hash', $hash)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No. KTP sudah terdaftar',
+                    'kode' => 'ktp_sudah_terdaftar',
+                ], 422);
+            }
         }
 
         try {

@@ -85,9 +85,13 @@ class Warga extends Model
     /**
      * Encrypt KK number
      */
-    public function setNoKkAttribute(string $value): void
+    public function setNoKkAttribute(?string $value): void
     {
-        $this->attributes['no_kk_encrypted'] = Crypt::encryptString($value);
+        if ($value) {
+            $this->attributes['no_kk_encrypted'] = Crypt::encryptString($value);
+        } else {
+            $this->attributes['no_kk_encrypted'] = null;
+        }
     }
 
     /**
@@ -109,10 +113,15 @@ class Warga extends Model
     /**
      * Encrypt KTP number
      */
-    public function setNoKtpAttribute(string $value): void
+    public function setNoKtpAttribute(?string $value): void
     {
-        $this->attributes['no_ktp_encrypted'] = Crypt::encryptString($value);
-        $this->attributes['no_ktp_hash'] = hash_hmac('sha256', $value, config('app.key'));
+        if ($value) {
+            $this->attributes['no_ktp_encrypted'] = Crypt::encryptString($value);
+            $this->attributes['no_ktp_hash'] = hash_hmac('sha256', $value, config('app.key'));
+        } else {
+            $this->attributes['no_ktp_encrypted'] = null;
+            $this->attributes['no_ktp_hash'] = null;
+        }
     }
 
     /**
