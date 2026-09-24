@@ -221,7 +221,7 @@ export default function AdminDashboardPage() {
     const handleExport = async () => {
         try {
             const token = localStorage.getItem('admin_token');
-            const response = await fetch(
+            const response = await api.get(
                 `/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
                 {
                     headers: {
@@ -230,13 +230,6 @@ export default function AdminDashboardPage() {
                     },
                 }
             );
-
-            if (!response.ok) {
-                throw new Error('Export failed');
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
             window.open(url, '_blank');
         } catch (error) {
             console.error('Export error:', error);
