@@ -222,14 +222,22 @@ export default function AdminDashboardPage() {
         try {
             const token = localStorage.getItem('admin_token');
             const response = await api.get(
-                `/api/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
+                `/admin/warga/export${filterBlok ? `?blok=${filterBlok}` : ''}`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/pdf',
                     },
+                    responseType: 'blob',
                 }
             );
+
+            if (response.status !== 200) {
+                throw new Error('Export failed');
+            }
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
             window.open(url, '_blank');
         } catch (error) {
             console.error('Export error:', error);
