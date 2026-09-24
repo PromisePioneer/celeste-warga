@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api', // Will be proxied to Laravel backend
+  baseURL: import.meta.env.VITE_API_URL || '/api', // Production: absolute URL, Dev: proxied
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
